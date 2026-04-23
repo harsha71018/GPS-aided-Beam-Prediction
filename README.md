@@ -13,7 +13,6 @@ This project builds upon the work by **Morais et al.** and their original codeba
 - **Original Repository**: [github.com/jmoraispk/Position-Beam-Prediction](https://github.com/jmoraispk/Position-Beam-Prediction)
 
 We extended their KNN and NN baselines by adding Random Forest, XGBoost, and Naive Bayes, and introduced new evaluation dimensions: resource allocation, GPS noise robustness, and Jain's Fairness analysis.
-> Published in: Transactions on Emerging Telecommunications Technologies (ETT), Wiley
 
 ---
 
