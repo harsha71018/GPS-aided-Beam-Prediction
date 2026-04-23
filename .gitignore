@@ -1,0 +1,46 @@
+# Data files (too large for GitHub — users download from DeepSense 6G)
+Gathered_data_DEV/
+*.npy
+
+# Output folders — allow result images/CSV, exclude model weights
+saved_folder/*/scenario*/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Submission documents (not for public repo)
+ETT_Cover_Letter.docx
+ETT_Graphical_Abstract_and_Highlights.docx
+generate_submission_docs.py
+generate_pptx.py
+extract_pdfs.py
+extract_docs.py
+temp_*.py
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.bbl
+*.blg
+*.synctex.gz
+
+# Presentation and study guide files
+VIVA_PRESENTATION.*
+TEAMMATE_STUDY_GUIDE.*
+BeamPredictionProjectReport.*
+BeamPredictionPaper_final_submission_content_cleaned.*
+*.pptx
