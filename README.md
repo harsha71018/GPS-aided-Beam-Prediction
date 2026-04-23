@@ -5,6 +5,14 @@
 This repository contains the source code for the research paper:
 
 > *GPS-Based Beam Prediction for 6G Vehicular Networks Using the DeepSense 6G Real-World Dataset*
+
+### Based On
+
+This project builds upon the work by **Morais et al.** and their original codebase:
+- **Paper**: J. Morais et al., *"Position-aided beam prediction in the real world: how useful GPS locations actually are?"*, arXiv:2205.09054, 2022.
+- **Original Repository**: [github.com/jmoraispk/Position-Beam-Prediction](https://github.com/jmoraispk/Position-Beam-Prediction)
+
+We extended their KNN and NN baselines by adding Random Forest, XGBoost, and Naive Bayes, and introduced new evaluation dimensions: resource allocation, GPS noise robustness, and Jain's Fairness analysis.
 > Published in: Transactions on Emerging Telecommunications Technologies (ETT), Wiley
 
 ---
@@ -170,8 +178,8 @@ If you use this code in your research, please cite:
 
 ## Acknowledgments
 
-- [DeepSense 6G Team](https://deepsense6g.net) — Wireless Intelligence Lab, Arizona State University
-- Morais et al. — baseline methodology and dataset curation
+- **Morais et al.** — original [Position-Beam-Prediction](https://github.com/jmoraispk/Position-Beam-Prediction) codebase that this project builds upon
+- [DeepSense 6G Team](https://deepsense6g.net) — Wireless Intelligence Lab, Arizona State University, for the real-world dataset
 
 ---
 
