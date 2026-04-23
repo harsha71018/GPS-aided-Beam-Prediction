@@ -6,7 +6,7 @@ This repository contains the source code for the research paper:
 
 > *GPS-Based Beam Prediction for 6G Vehicular Networks Using the DeepSense 6G Real-World Dataset*
 >
-> **Submitted to:** Transactions on Emerging Telecommunications Technologies (ETT), Wiley — April 2025
+> **Submitted to:** Transactions on Emerging Telecommunications Technologies (ETT), Wiley — April 2026
 
 ### Based On
 
