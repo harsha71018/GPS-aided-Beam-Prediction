@@ -184,6 +184,79 @@ If you use this code in your research, please cite:
 
 ---
 
+## Further Tuning
+
+The [`Further tuning/`](Further%20tuning/) folder contains a refined version of the pipeline with a critical bug fix and updated results.
+
+### What Changed
+
+The original `Loader.py` had a **beam ID mapping bug** in the classical ML models (KNN, RF, XGB, NB). When calling `predict_proba()`, these models return probabilities indexed by their internal class ordering — not by actual beam indices. The old code treated probability column indices as beam IDs, which silently produced incorrect predictions whenever the training set didn't contain all 64 beam classes.
+
+**Fix applied** (in `deepseekv4pro_loader.py`):
+```python
+# Before (incorrect):
+pred_beams = np.argsort(pred_probs, axis=1)[:, ::-1]
+
+# After (correct):
+sorted_idx = np.argsort(pred_probs, axis=1)[:, ::-1]
+pred_beams = clf.classes_[sorted_idx]  # Map indices to real beam IDs
+```
+
+The Neural Network was unaffected — it uses a separate `test_net()` code path that returns beam indices directly from the output layer.
+
+### Files
+
+```
+Further tuning/
+├── deepseekv4pro_loader.py              # Fixed main pipeline
+├── deepseekv4pro_train_test_func.py     # Utility functions (unchanged logic)
+├── deepseelv4pro_check_env_file.py      # Environment checker (improved)
+└── Final_ML_Viz_1779380116/             # Results with the bug fix applied
+    ├── Final_Project_Results_Full.csv
+    ├── 1_Top1_Accuracy.png ... 13_Radar_Chart.png
+    └── scenario */NN/best_model.pth     # Saved NN weights (3 scenarios)
+```
+
+### Results Comparison — Before vs After Bug Fix
+
+#### Top-1 Accuracy (%) — Averaged across 3 scenarios
+
+| Model | Before (Original) | After (Further Tuning) | Change |
+|-------|:--:|:--:|:--:|
+| **KNN** | 5.87 | **41.89** | +36.02 |
+| **RF** | 4.73 | **41.62** | +36.89 |
+| **XGB** | 5.42 | **41.03** | +35.61 |
+| **NB** | 6.64 | **23.81** | +17.17 |
+| **NN** | 37.28 | **37.28** | 0.00 |
+
+> **Key takeaway:** The classical models were severely underreported in the original run. After the fix, KNN, RF, and XGBoost all perform competitively with the Neural Network — and in some scenarios even surpass it.
+
+#### Power Loss (dB) — Averaged across 3 scenarios
+
+| Model | Before | After |
+|-------|:--:|:--:|
+| KNN | 1.77 | **0.64** |
+| RF | 1.72 | **0.64** |
+| XGB | 1.80 | **0.67** |
+| NB | 2.39 | **1.87** |
+| NN | 0.85 | **0.85** |
+
+All models remain below the 3 dB practical threshold. ✅
+
+#### GPS Noise Robustness Drop (%) — 1 m perturbation
+
+| Model | Before | After |
+|-------|:--:|:--:|
+| KNN | 0.00 | **20.44** |
+| RF | 0.00 | **22.00** |
+| XGB | 1.97 | **21.85** |
+| NB | 0.00 | **3.78** |
+| NN | 11.23 | **11.23** |
+
+> **Note:** The original "zero degradation" for KNN/RF/NB was an artifact of the bug — incorrect beam IDs happened to be equally wrong with or without noise. With correct beam mapping, classical models show meaningful GPS sensitivity. Naive Bayes remains the most robust (3.78% avg drop).
+
+---
+
 ## License
 
 This project is released for academic and research purposes.
