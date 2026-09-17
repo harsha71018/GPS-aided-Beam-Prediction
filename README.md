@@ -276,6 +276,7 @@ The [`Advanced_Pipeline/`](Advanced_Pipeline/) folder contains the next-generati
 
 ```
 Advanced_Pipeline/
+├── advanced_check_env.py           # Environment, GPU & dataset verification script
 ├── advanced_loader.py              # Upgraded execution pipeline (14 plots + 2 CSVs)
 ├── advanced_train_test_func.py     # Kinematic feature extraction & advanced NN module
 └── Advanced_ML_Viz_1789648029/     # Complete verified results package
@@ -301,6 +302,11 @@ Advanced_Pipeline/
 ### How to Run
 ```bash
 cd Advanced_Pipeline
+
+# 1. Verify dependencies, CUDA GPU & dataset
+python advanced_check_env.py
+
+# 2. Run the advanced pipeline
 python advanced_loader.py
 ```
 
