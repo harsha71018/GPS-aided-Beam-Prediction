@@ -6,7 +6,7 @@ This repository contains the source code for the research paper:
 
 > *GPS-Based Beam Prediction for 6G Vehicular Networks Using the DeepSense 6G Real-World Dataset*
 >
-> **Submitted to:** Transactions on Emerging Telecommunications Technologies (ETT), Wiley — April 2026
+> **Submitted to:** International Journal of Communication Systems (IJCS), Wiley
 
 ### Based On
 
@@ -166,11 +166,11 @@ All experiments use `seed=42` for full reproducibility. The `set_global_seeds()`
 If you use this code in your research, please cite:
 
 ```bibtex
-@article{harshavardhan2025gps,
+@article{harshavardhan2026gps,
   title={GPS-Based Beam Prediction for 6G Vehicular Networks Using the DeepSense 6G Real-World Dataset},
   author={Dasyapu, Harshavardhan and Danaboyina, Vamshi and Gaikwad, Prasenjith Kumar and Tangelapalli, Swapna},
-  journal={Transactions on Emerging Telecommunications Technologies},
-  year={2025},
+  journal={International Journal of Communication Systems},
+  year={2026},
   publisher={Wiley}
 }
 ```
