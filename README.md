@@ -257,6 +257,55 @@ All models remain below the 3 dB practical threshold. ✅
 
 ---
 
+## Advanced Pipeline (v2 — Geometric & Kinematic Framework)
+
+The [`Advanced_Pipeline/`](Advanced_Pipeline/) folder contains the next-generation evolution of this research. While the root repository code represents the baseline submitted to the **International Journal of Communication Systems (IJCS)**, this advanced framework introduces physical antenna geometry, leakage-free data hygiene, and continuous noise modeling.
+
+### Key Architectural Advancements
+1. **Kinematic & Geometric Feature Engineering**:
+   - Converts coordinates to metric UTM space.
+   - Computes Euclidean range ($d = \sqrt{\Delta x^2 + \Delta y^2}$) and Line-of-Sight Azimuth bearing angle ($\theta = \arctan2(\Delta y, \Delta x)$) relative to the base station tower.
+2. **Zero-Leakage Preprocessing**:
+   - Feature scalers are fitted strictly on the training partition and only transformed onto the test partition.
+3. **Continuous GPS Robustness Curve**:
+   - Sweeps noise levels continuously across $\sigma \in [0.5\text{ m}, 1.0\text{ m}, 2.0\text{ m}, 3.0\text{ m}, 5.0\text{ m}]$ (`14_Noise_Robustness_Curve.png`).
+4. **Enhanced Neural Network Training**:
+   - Integrates `BatchNorm1d`, `AdamW`, and `CosineAnnealingLR` decay.
+
+### Files
+
+```
+Advanced_Pipeline/
+├── advanced_loader.py              # Upgraded execution pipeline (14 plots + 2 CSVs)
+├── advanced_train_test_func.py     # Kinematic feature extraction & advanced NN module
+└── Advanced_ML_Viz_1789648029/     # Complete verified results package
+    ├── 1_Top1_Accuracy.png ... 13_Radar_Chart.png
+    ├── 14_Noise_Robustness_Curve.png
+    ├── Final_Project_Results_Full.csv
+    ├── Noise_Robustness_Sweep.csv
+    └── scenario_*/NN/best_model.pth # Saved model checkpoints
+```
+
+### Performance Milestone (Avg across 3 Scenarios)
+
+| Metric | Submitted Paper Baseline | Further Tuning (DeepSeek) | Advanced Pipeline (v2) | Milestone Gain |
+| :--- | :---: | :---: | :---: | :---: |
+| **NN Top-1 Accuracy** | 37.28% | 37.28% | **43.48%** | **+6.20%** (*53.20% in Scen 1*) |
+| **NN Top-5 Accuracy** | 85.76% | 85.76% | **87.81%** | **+2.05%** (*96.49% in Scen 1*) |
+| **XGBoost Top-1 Accuracy** | 5.42% | 41.03% | **43.17%** | Near parity with NN |
+| **Random Forest Top-1** | 4.73% | 41.62% | **41.92%** | High-performance ensemble |
+| **KNN Top-1 Accuracy** | 5.87% | 41.89% | **41.09%** | Robust distance-weighted baseline |
+| **Average Power Loss (NN)** | 0.85 dB | 0.85 dB | **0.62 dB** | **0.23 dB in Scen 1** |
+| **Inference Latency** | $<1\text{ ms}$ | $<1\text{ ms}$ | **$20\text{ }\mu\text{s}$ (NN)** | Sub-millisecond edge ready |
+
+### How to Run
+```bash
+cd Advanced_Pipeline
+python advanced_loader.py
+```
+
+---
+
 ## License
 
 This project is released for academic and research purposes.
