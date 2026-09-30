@@ -16,7 +16,7 @@ This repository contains the source code, evaluation framework, and empirical be
 
 > [!NOTE]
 > **For Peer Reviewers (Wiley IJCS):**  
-> To reproduce the exact models, tables, and 13 figures published in the submitted manuscript, please refer directly to **[Tier 1: Original Submitted Baseline](#-run-original-submitted-baseline-tier-1)** (`python Loader.py` and `saved_folder/Final_ML_Viz_1776919650/`). The 13 figures correspond 1:1 to the submitted paper; the 14th figure (continuous GPS noise curve) belongs to the post-submission Advanced Pipeline.
+> To reproduce the exact models, tables, and 13 figures published in the submitted manuscript, please refer directly to **[Tier 1: Original Submitted Baseline](#run-original-submitted-baseline-tier-1)** (`python Loader.py` and `saved_folder/Final_ML_Viz_1776919650/`). The 13 figures correspond 1:1 to the submitted paper; the 14th figure (continuous GPS noise curve) belongs to the post-submission Advanced Pipeline.
 
 ### Based On
 
