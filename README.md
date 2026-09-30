@@ -14,6 +14,10 @@ This repository contains the source code, evaluation framework, and empirical be
 >
 > **Submitted to:** International Journal of Communication Systems (IJCS), Wiley
 
+> [!NOTE]
+> **For Peer Reviewers (Wiley IJCS):**  
+> To reproduce the exact models, tables, and 13 figures published in the submitted manuscript, please refer directly to **[Tier 1: Original Submitted Baseline](#-run-original-submitted-baseline-tier-1)** (`python Loader.py` and `saved_folder/Final_ML_Viz_1776919650/`). The [`Further tuning/`](Further%20tuning/) and [`Advanced_Pipeline/`](Advanced_Pipeline/) directories document subsequent post-submission engineering advancements.
+
 ### Based On
 
 This project builds upon the foundational work by **Morais et al.** and their original codebase:
@@ -314,4 +318,4 @@ If you use this code or findings in your research, please cite:
 
 ## License
 
-This project is released for academic and research purposes under the MIT License.
+This project is released for academic and research purposes.

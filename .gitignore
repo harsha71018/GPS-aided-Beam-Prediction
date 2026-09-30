@@ -21,9 +21,16 @@ venv/
 Thumbs.db
 desktop.ini
 
-# Submission documents (not for public repo)
-ETT_Cover_Letter.docx
-ETT_Graphical_Abstract_and_Highlights.docx
+# Documents, PDFs, and reviewer files (private)
+*.pdf
+*.docx
+*.tex
+*.pptx
+NEWCODEXFILES/
+tools/
+project_evaluation*
+ilovepdf_pages-to-jpg*/
+pptx_media/
 generate_submission_docs.py
 generate_pptx.py
 extract_pdfs.py
@@ -41,6 +48,11 @@ temp_*.py
 # Presentation and study guide files
 VIVA_PRESENTATION.*
 TEAMMATE_STUDY_GUIDE.*
-BeamPredictionProjectReport.*
-BeamPredictionPaper_final_submission_content_cleaned.*
-*.pptx
+BeamPredictionProjectReport*
+BeamPredictionPaper*
+
+# Experimental seeded runs and uncommitted research
+advanced_loader_seeded.py
+Advanced_Pipeline/advanced_loader_seeded.py
+saved_folder/Advanced_ML_Viz_Seeded_*/
+saved_folder/Advanced_ML_Viz_1789712609/
