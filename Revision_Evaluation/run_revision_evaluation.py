@@ -297,11 +297,15 @@ for scen_idx in scenarios:
             "Excludes_Zero": excludes_zero
         })
 
-    # D. Outage Probabilities & Two-Sided Fisher Exact Test
-    print(f"\n[Outage Probabilities (Two-Sided Fisher Exact Test)]")
+    # D. Outage Probabilities, Two-Sided Fisher Exact Test & Paired McNemar Test
+    print(f"\n[Outage Probabilities (Fisher Exact & Paired McNemar Tests)]")
     for thresh in [3.0, 6.0]:
-        xgb_cnt = int(np.round(np.mean([np.sum(l > thresh) for l in xgb_losses])))
-        nn_cnt = int(np.round(np.mean([np.sum(l > thresh) for l in nn_losses])))
+        xgb_per_seed = [int(np.sum(l > thresh)) for l in xgb_losses]
+        nn_per_seed = [int(np.sum(l > thresh)) for l in nn_losses]
+        xgb_cnt_mean = float(np.mean(xgb_per_seed))
+        nn_cnt_mean = float(np.mean(nn_per_seed))
+        xgb_cnt = int(np.round(xgb_cnt_mean))
+        nn_cnt = int(np.round(nn_cnt_mean))
         xgb_pct = (xgb_cnt / n_test) * 100.0
         nn_pct = (nn_cnt / n_test) * 100.0
 
@@ -311,20 +315,38 @@ for scen_idx in scenarios:
             ratio = xgb_pct / nn_pct
             ratio_str = f"{ratio:.2f}x reduction"
 
+        # 1. Independent Fisher's Exact Test
         table = [[nn_cnt, n_test - nn_cnt], [xgb_cnt, n_test - xgb_cnt]]
         _, p_fisher = stats.fisher_exact(table, alternative='two-sided')
 
+        # 2. Paired McNemar Test (Exact Binomial Test on Discordant Matched Frames)
+        nn_out = (mean_nn_loss > thresh)
+        xgb_out = (mean_xgb_loss > thresh)
+        b_disc = int(np.sum((~nn_out) & xgb_out))  # XGB outage only
+        c_disc = int(np.sum(nn_out & (~xgb_out)))  # NN outage only
+        if (b_disc + c_disc) > 0:
+            p_mcnemar = float(stats.binomtest(b_disc, b_disc + c_disc, 0.5).pvalue)
+        else:
+            p_mcnemar = 1.0
+
         summary_entry[f"NN_Outage_{int(thresh)}dB_Pct"] = round(nn_pct, 2)
         summary_entry[f"NN_Outage_{int(thresh)}dB_Cnt"] = f"{nn_cnt}/{n_test}"
+        summary_entry[f"NN_Outage_{int(thresh)}dB_Seeds"] = str(nn_per_seed)
         summary_entry[f"XGB_Outage_{int(thresh)}dB_Pct"] = round(xgb_pct, 2)
         summary_entry[f"XGB_Outage_{int(thresh)}dB_Cnt"] = f"{xgb_cnt}/{n_test}"
+        summary_entry[f"XGB_Outage_{int(thresh)}dB_Seeds"] = str(xgb_per_seed)
         summary_entry[f"Outage_{int(thresh)}dB_Reduction"] = ratio_str
         summary_entry[f"Fisher_{int(thresh)}dB_p_val"] = float(f"{p_fisher:.4e}")
+        summary_entry[f"McNemar_{int(thresh)}dB_b"] = b_disc
+        summary_entry[f"McNemar_{int(thresh)}dB_c"] = c_disc
+        summary_entry[f"McNemar_{int(thresh)}dB_p_val"] = float(f"{p_mcnemar:.4e}")
 
         print(f"  Threshold {thresh:.0f} dB:")
-        print(f"    NN Outage:  {nn_cnt:3d}/{n_test} ({nn_pct:.2f}%)")
-        print(f"    XGB Outage: {xgb_cnt:3d}/{n_test} ({xgb_pct:.2f}%)")
-        print(f"    Reduction:  {ratio_str} (p = {p_fisher:.4e})")
+        print(f"    NN Outage:     {nn_cnt:3d}/{n_test} ({nn_pct:.2f}%) [Per-seed: {nn_per_seed}, Mean: {nn_cnt_mean:.2f}]")
+        print(f"    XGB Outage:    {xgb_cnt:3d}/{n_test} ({xgb_pct:.2f}%) [Per-seed: {xgb_per_seed}, Mean: {xgb_cnt_mean:.2f}]")
+        print(f"    Reduction:     {ratio_str}")
+        print(f"    Fisher Exact:  p = {p_fisher:.4e}")
+        print(f"    McNemar Match: b = {b_disc}, c = {c_disc} -> p = {p_mcnemar:.4e}")
 
     summary_records.append(summary_entry)
 

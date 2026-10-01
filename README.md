@@ -359,5 +359,5 @@ If you use this code or findings in your research, please cite:
 
 ## License
 
-- **Source Code**: Novel algorithms, advanced pipelines (Tier 3), and revision evaluation harnesses (Tier 4) are licensed under the [MIT License](LICENSE).
-- **Data & Upstream Baselines**: The DeepSense 6G dataset files (`Gathered_data_DEV/`) and upstream baseline references are distributed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International ([CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)) License.
+- **Source Code**: Novel algorithms, classical ML bug diagnoses (Tier 2 in `Further tuning/`), advanced pipelines (Tier 3 in `Advanced_Pipeline/`), and revision evaluation harnesses (Tier 4 in `Revision_Evaluation/`) are licensed under the [MIT License](LICENSE).
+- **Data & Upstream Baselines**: The DeepSense 6G dataset files (`Gathered_data_DEV/`) and upstream baseline references are distributed under the Creative Commons Attribution-NonCommercial-ShareAlike ([CC BY-NC-SA](https://deepsense6g.net)) License.

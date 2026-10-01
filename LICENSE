@@ -23,6 +23,6 @@ SOFTWARE.
 ---
 
 ### Third-Party Data & Baseline Attribution:
-- **DeepSense 6G Dataset**: Real-world sensory and wireless measurement data (`Gathered_data_DEV/`) are sourced from the DeepSense 6G dataset (Wireless Intelligence Lab, Arizona State University) and are subject to the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) License.
+- **DeepSense 6G Dataset**: Real-world sensory and wireless measurement data (`Gathered_data_DEV/`) are sourced from the DeepSense 6G dataset (Wireless Intelligence Lab, Arizona State University: https://deepsense6g.net) and are subject to the Creative Commons Attribution-NonCommercial-ShareAlike (CC BY-NC-SA) License.
 - **Original Baseline References**: The historical baseline implementations (`Loader.py`, `train_test_func.py`) build upon the position-aided beam prediction codebase by Morais et al. (ICC 2023) and adhere to DeepSense 6G non-commercial academic research terms.
-- **Novel Contributions**: All novel research code, including Advanced Geometric & Kinematic Pipelines (Tier 3), Chronological Trajectory Extrapolation Harnesses, Moving Block Bootstrapping, and Outage Analysis modules (Tier 4), are licensed under the MIT License above.
+- **Novel Contributions**: All novel research code, including Classical ML Diagnosis & Refinements (Tier 2 in `Further tuning/`), Advanced Geometric & Kinematic Pipelines (Tier 3 in `Advanced_Pipeline/`), and Chronological Trajectory Extrapolation, Moving Block Bootstrapping, and Outage Analysis modules (Tier 4 in `Revision_Evaluation/`), are licensed under the MIT License above.
