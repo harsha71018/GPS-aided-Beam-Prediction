@@ -1,10 +1,10 @@
-Scenario,Block_Size_L,Margin_Mean,CI_Low_2_5,CI_High_97_5,SE,p_value,Excludes_Zero
-Scenario 1 (Day-A),25,0.21,-4.12,4.74,2.27,0.9588,False
-Scenario 1 (Day-A),50,0.21,-3.3,3.92,1.88,0.9612,False
-Scenario 1 (Day-A),100,0.21,-3.09,3.71,1.74,0.9648,False
-Scenario 2 (Night),25,10.31,1.34,20.5,4.98,0.0192,True
-Scenario 2 (Night),50,10.31,1.68,20.67,4.98,0.0168,True
-Scenario 2 (Night),100,10.31,2.18,20.17,4.6,0.006,True
-Scenario 3 (Day-B),25,6.94,0.34,13.09,3.28,0.0484,True
-Scenario 3 (Day-B),50,6.94,0.0,13.09,3.29,0.0508,False
-Scenario 3 (Day-B),100,6.94,-0.34,12.08,3.26,0.07,False
+Scenario,Block_Size_L,Margin_Mean,CI_Low_2_5,CI_High_97_5,SE,Excludes_Zero
+Scenario 1 (Day-A),25,0.21,-4.12,4.74,2.27,False
+Scenario 1 (Day-A),50,0.21,-3.3,3.92,1.88,False
+Scenario 1 (Day-A),100,0.21,-3.09,3.71,1.74,False
+Scenario 2 (Night),25,10.31,1.34,20.5,4.98,True
+Scenario 2 (Night),50,10.31,1.68,20.67,4.98,True
+Scenario 2 (Night),100,10.31,2.18,20.17,4.6,True
+Scenario 3 (Day-B),25,6.94,0.34,13.09,3.28,True
+Scenario 3 (Day-B),50,6.94,0.0,13.09,3.29,False
+Scenario 3 (Day-B),100,6.94,-0.34,12.08,3.26,False

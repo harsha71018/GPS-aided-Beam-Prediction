@@ -1,4 +1,4 @@
 Scenario,Total_Samples,Train_Samples,Test_Samples,XGB_Top1_Acc,NN_Top1_Acc,NN_Seeds,Margin_pp,NN_Outage_3dB_Pct,NN_Outage_3dB_Cnt,XGB_Outage_3dB_Pct,XGB_Outage_3dB_Cnt,Outage_3dB_Reduction,Fisher_3dB_p_val,NN_Outage_6dB_Pct,NN_Outage_6dB_Cnt,XGB_Outage_6dB_Pct,XGB_Outage_6dB_Cnt,Outage_6dB_Reduction,Fisher_6dB_p_val
-Scenario 1 (Day-A),2422,1937,485,48.45,48.66,"[49.07, 48.87, 48.04]",0.21,1.03,5/485,1.44,7/485,1.40x reduction,0.77301,0.0,0/485,0.21,1/485,Zero NN events (100% reliable),1.0
-Scenario 2 (Night),2974,2379,595,24.87,35.18,"[35.13, 31.26, 39.16]",10.31,3.36,20/595,10.08,60/595,3.00x reduction,4.187e-06,0.5,3/595,3.53,21/595,7.00x reduction,0.0002426
+Scenario 1 (Day-A),2422,1937,485,48.45,48.66,"[49.07, 48.87, 48.04]",0.21,1.03,5/485,1.44,7/485,1.40x reduction,0.77301,0.0,0/485,0.21,1/485,n/a (0 events),1.0
+Scenario 2 (Night),2974,2379,595,24.87,35.23,"[33.45, 35.63, 38.15, 36.3, 35.13, 35.63, 36.64, 34.79, 35.46, 31.09]",10.36,3.36,20/595,10.08,60/595,3.00x reduction,4.187e-06,0.5,3/595,3.53,21/595,7.00x reduction,0.0002426
 Scenario 3 (Day-B),1487,1189,298,23.83,30.76,"[32.55, 29.19, 30.54]",6.94,14.09,42/298,17.79,53/298,1.26x reduction,0.26306,1.68,5/298,2.35,7/298,1.40x reduction,0.77211

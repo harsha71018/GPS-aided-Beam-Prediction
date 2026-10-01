@@ -8,17 +8,21 @@ It provides a fully reproducible evaluation harness that models realistic vehicu
 
 ## 1. Core Findings & Physical Insights
 
-The Deep Neural Network's advantage under chronological extrapolation is **+10.36 pp** (10-seed mean **35.23%** vs. XGBoost **24.87%** in Scenario 2 - Night). 
+Under chronological trajectory extrapolation, the Deep Neural Network achieves **a robust +10.31 pp to +10.36 pp margin in night conditions (Scenario 2)**, with a **marginal and directionally consistent +6.94 pp in Day-B (Scenario 3)**.
 
-Uncertainty is quantified two ways:
-1. **Circular Moving-Block Bootstrap (C-MBB)** over the test trajectory (**95% CI [+2.18, +20.17] pp**, $N_{\text{test}} = 595$, strictly excluding zero across all block lengths $L=25, 50, 100$). This dominates and constitutes the primary basis of statistical significance.
-2. **Seed-to-Seed Optimization Variability** ($\text{SD} = 1.90\text{ pp}$ across 10 independent seeds, standard error $\pm 0.60\text{ pp}$). This confirms the performance advantage is not an artifact of initialization.
+In Scenario 2 (Night), the neural network maintains **35.23%** Top-1 accuracy across an expanded 10-seed empirical distribution (`Revision_10_Seed_Distribution.csv`, standard error $\pm 0.60\text{ pp}$) and **35.18%** across the 3 standard benchmark checkpoints, compared to XGBoost at **24.87%** (a **+10.31 pp** to **+10.36 pp** advantage).
+
+Uncertainty is quantified along two independent dimensions:
+1. **Circular Moving-Block Bootstrap (C-MBB)** over the test trajectory (**95% CI [+2.18, +20.17] pp**, $N_{\text{test}} = 595$, strictly excluding zero across all block lengths $L=25, 50, 100$). This frame-sampling uncertainty dominates and constitutes the primary basis of statistical significance.
+2. **Seed-to-Seed Optimization Variability** ($\text{SD} = 1.90\text{ pp}$ across 10 independent seeds, standard error $\pm 0.60\text{ pp}$, 95% $t$-interval $[33.87\%, 36.59\%]$). This confirms the performance advantage is robust against weight initialization stochasticity.
 
 ### Environmental Propagation Regimes
 * **Scenario 1 (Day-A, $N_{\text{test}} = 485$) — Open Line-of-Sight (LOS)**:
   On simple straight daylight paths, coordinate-to-beam correspondence is geometrically direct. Both tree ensembles and neural networks achieve equivalent accuracy (**48.45% vs. 48.66%**, a $+0.21\text{ pp}$ tie).
-* **Scenario 2 (Night, $N_{\text{test}} = 595$) & Scenario 3 (Day-B, $N_{\text{test}} = 298$) — Severe Multipath & Blockage**:
-  Under complex urban propagation, non-linear reflections and shadowing break bijective coordinate mapping. Rigid orthogonal decision trees fail to extrapolate into unseen coordinates ($24.87\%$), whereas the continuous inductive bias of deep neural networks preserves tracking fidelity ($35.18\%$), delivering an undeniable $+10.31\text{ pp}$ margin and cutting 3 dB beam misalignment outages by **$3.00\times$** ($p = 4.19 \times 10^{-6}$ via two-sided Fisher's Exact Test).
+* **Scenario 2 (Night, $N_{\text{test}} = 595$) — Multipath & Low-Light Dynamic Scattering (Robust Advantage)**:
+  Under complex nocturnal multipath conditions without visual cues, non-linear reflections and shadowing degrade spatial bijectivity. Rigid orthogonal decision trees fail to extrapolate into unseen terminal coordinates ($24.87\%$), whereas the continuous inductive bias of deep neural networks preserves smooth spatial tracking ($35.23\%$, $35.18\%$), delivering a **robust +10.31 pp margin** and cutting 3 dB beam misalignment outages by **$3.00\times$** ($10.08\%$ down to $3.36\%$, $p = 4.19 \times 10^{-6}$ via two-sided Fisher's Exact Test). C-MBB 95% confidence intervals strictly exclude zero across all block lengths ($L=25, 50, 100$).
+* **Scenario 3 (Day-B, $N_{\text{test}} = 298$) — Urban Canyon & Blockage (Marginal Directional Trend)**:
+  In the shorter Day-B trajectory, the neural network exhibits a $+6.94\text{ pp}$ margin ($30.76\%$ vs. $23.83\%$) and modest outage reduction ($17.79\%$ to $14.09\%$, $p = 0.2631$). While directionally consistent with Scenario 2, the advantage is statistically marginal due to smaller test sample size ($N_{\text{test}} = 298$), with C-MBB intervals crossing zero at larger block lengths ($L=50: [+0.00\%, +13.09\%]$; $L=100: [-0.34\%, +12.08\%]$). We report this result transparently as a non-significant directional trend rather than a conclusive margin.
 
 ---
 
@@ -29,9 +33,11 @@ Uncertainty is quantified two ways:
 
 | Scenario | Test Frames | XGBoost Top-1 | Neural Network Top-1 | Margin | 3 dB Outage (XGB vs NN) | Outage Reduction Ratio | Two-Sided Fisher $p$ |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Scenario 1 (Day-A)** | 485 | 48.45% | 48.66% | +0.21 pp | 7 vs 5 (1.44% vs 1.03%) | 1.40x reduction | $p = 0.773$ |
-| **Scenario 2 (Night)** | 595 | **24.87%** | **35.18%** | **+10.31 pp** | **60 vs 20 (10.08% vs 3.36%)** | **3.00x reduction** | **$p = 4.19 \times 10^{-6}$** |
-| **Scenario 3 (Day-B)** | 298 | 23.83% | 30.76% | +6.94 pp | 53 vs 42 (17.79% vs 14.09%) | 1.26x reduction | $p = 0.263$ |
+| **Scenario 1 (Day-A)** | 485 | 48.45% | 48.66% | +0.21 pp | 7 vs 5 (1.44% vs 1.03%) | 1.40x reduction | $p = 0.7730$ |
+| **Scenario 2 (Night)** | 595 | **24.87%** | **35.23%** *(10 seeds)* | **+10.36 pp** | **60 vs 20 (10.08% vs 3.36%)** | **3.00x reduction** | **$p = 4.19 \times 10^{-6}$** |
+| **Scenario 3 (Day-B)** | 298 | 23.83% | 30.76% | +6.94 pp | 53 vs 42 (17.79% vs 14.09%) | 1.26x reduction | $p = 0.2631$ |
+
+> **Note on Scenario 2 Seed Reporting**: The 3-checkpoint benchmark mean is 35.18% (+10.31 pp margin), and the expanded 10-seed distribution mean is 35.23% ($\text{SD} = 1.90\text{ pp}$, $\text{SE} = \pm 0.60\text{ pp}$, +10.36 pp margin), demonstrating that NN superiority is invariant to optimization stochasticity. In Scenario 1 at 6 dB threshold, zero NN outage events were recorded (`n/a (0 events)`).
 
 ### Table 2: Circular Moving Block Bootstrap 95% Confidence Intervals
 *(Generated from `Revision_Bootstrap_CI_Summary.csv`)*

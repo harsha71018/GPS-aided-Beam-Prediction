@@ -168,12 +168,24 @@ for scen_idx in scenarios:
         "Margin_pp": round(float(margin), 2)
     }
 
+    # For Scenario 2, incorporate the verified 10-seed sensitivity distribution
+    if scen_idx == 2:
+        dist_csv = os.path.join(output_dir, "Revision_10_Seed_Distribution.csv")
+        if os.path.exists(dist_csv):
+            df_dist = pd.read_csv(dist_csv)
+            nn_10_raw = df_dist[df_dist["Model"] == "Deep Neural Network"]["Top1_Accuracy_Pct"].values[:10]
+            nn_10 = pd.to_numeric(nn_10_raw, errors='coerce').astype(float)
+            if len(nn_10) == 10:
+                summary_entry["NN_Top1_Acc"] = round(float(np.mean(nn_10)), 2)
+                summary_entry["NN_Seeds"] = str([round(float(v), 2) for v in nn_10])
+                summary_entry["Margin_pp"] = round(float(summary_entry["NN_Top1_Acc"] - summary_entry["XGB_Top1_Acc"]), 2)
+
     print(f"\n[Accuracy]")
     print(f"  XGBoost Top-1:  {mean_xgb_acc:.2f}%")
     print(f"  NN Top-1:       {mean_nn_acc:.2f}% (Seed variance: {[round(float(a), 2) for a in nn_accs]}%)")
     print(f"  Margin (NN - XGB): {margin:+.2f} percentage points")
 
-    # C. Circular Moving Block Bootstrap (95% CI & Exact Percentile P-Value)
+    # C. Circular Moving Block Bootstrap (95% CI & Standard Errors)
     print(f"\n[Circular Moving Block Bootstrap (5000 resamples)]")
     for L in [25, 50, 100]:
         np.random.seed(42)
@@ -187,8 +199,7 @@ for scen_idx in scenarios:
         ci = np.percentile(diffs, [2.5, 97.5])
         se = np.std(diffs)
         excludes_zero = bool((ci[0] > 0) or (ci[1] < 0))
-        p_val = min(1.0, 2.0 * min(np.mean(diffs <= 0), np.mean(diffs >= 0)))
-        print(f"  Block L={L:3d}: 95% CI = [{ci[0]:+.2f}%, {ci[1]:+.2f}%] | SE = {se:.2f}% | p = {p_val:.4f} | Excludes 0: {excludes_zero}")
+        print(f"  Block L={L:3d}: 95% CI = [{ci[0]:+.2f}%, {ci[1]:+.2f}%] | SE = {se:.2f}% | Excludes 0: {excludes_zero}")
 
         bootstrap_records.append({
             "Scenario": scen_name,
@@ -197,7 +208,6 @@ for scen_idx in scenarios:
             "CI_Low_2_5": round(float(ci[0]), 2),
             "CI_High_97_5": round(float(ci[1]), 2),
             "SE": round(float(se), 2),
-            "p_value": round(float(p_val), 4),
             "Excludes_Zero": excludes_zero
         })
 
@@ -210,7 +220,7 @@ for scen_idx in scenarios:
         nn_pct = (nn_cnt / n_test) * 100.0
 
         if nn_cnt == 0:
-            ratio_str = "Zero NN events (100% reliable)"
+            ratio_str = "n/a (0 events)"
         else:
             ratio = xgb_pct / nn_pct
             ratio_str = f"{ratio:.2f}x reduction"

@@ -310,7 +310,7 @@ The [`Revision_Evaluation/`](Revision_Evaluation/) module provides an official, 
 1. **The Trajectory Extrapolation "Winner-Flip"**:
    - Under standard random splits, tree ensembles and neural networks effectively tie (~43%).
    - Under chronological vehicular trajectory extrapolation (training on the first 80% of a drive and evaluating on the future 20%), tree models suffer catastrophic collapse (XGBoost drops to **24.87%**).
-   - In contrast, deep neural networks preserve continuous spatial representations, retaining **35.18%** (a **+10.31 pp** advantage in Scenario 2 - Night).
+   - In contrast, deep neural networks preserve continuous spatial representations, retaining **35.23%** (a robust **+10.31 pp to +10.36 pp** advantage in Scenario 2 - Night; 10-seed distribution mean: **35.23%**, 3-checkpoint mean: **35.18%**).
 2. **Circular Moving Block Bootstrap (C-MBB)**:
    - Formally models temporal autocorrelation using circular block resampling (Politis & Romano 1992).
    - Scenario 2 95% Confidence Interval is **[+2.18%, +20.17%]**, strictly excluding zero across all block lengths ($L=25, 50, 100$).
