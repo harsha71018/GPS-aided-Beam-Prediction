@@ -320,6 +320,7 @@ for scen_idx in scenarios:
         _, p_fisher = stats.fisher_exact(table, alternative='two-sided')
 
         # 2. Paired McNemar Test (Exact Binomial Test on Discordant Matched Frames)
+        # Evaluated on 3-checkpoint mean per-frame loss across the N_test frames (N_test = 595, zero pseudoreplication)
         nn_out = (mean_nn_loss > thresh)
         xgb_out = (mean_xgb_loss > thresh)
         b_disc = int(np.sum((~nn_out) & xgb_out))  # XGB outage only
@@ -328,6 +329,14 @@ for scen_idx in scenarios:
             p_mcnemar = float(stats.binomtest(b_disc, b_disc + c_disc, 0.5).pvalue)
         else:
             p_mcnemar = 1.0
+
+        # Also compute per-seed McNemar p-values across the N_test matched frames
+        mcnemar_per_seed = []
+        for i in range(len(seeds)):
+            b_s = int(np.sum((~(nn_losses[i] > thresh)) & (xgb_losses[i] > thresh)))
+            c_s = int(np.sum((nn_losses[i] > thresh) & (~(xgb_losses[i] > thresh))))
+            p_s = float(stats.binomtest(b_s, b_s + c_s, 0.5).pvalue) if (b_s + c_s) > 0 else 1.0
+            mcnemar_per_seed.append(float(f"{p_s:.4e}"))
 
         summary_entry[f"NN_Outage_{int(thresh)}dB_Pct"] = round(nn_pct, 2)
         summary_entry[f"NN_Outage_{int(thresh)}dB_Cnt"] = f"{nn_cnt}/{n_test}"
@@ -340,6 +349,7 @@ for scen_idx in scenarios:
         summary_entry[f"McNemar_{int(thresh)}dB_b"] = b_disc
         summary_entry[f"McNemar_{int(thresh)}dB_c"] = c_disc
         summary_entry[f"McNemar_{int(thresh)}dB_p_val"] = float(f"{p_mcnemar:.4e}")
+        summary_entry[f"McNemar_{int(thresh)}dB_Per_Seed_p_vals"] = str(mcnemar_per_seed)
 
         print(f"  Threshold {thresh:.0f} dB:")
         print(f"    NN Outage:     {nn_cnt:3d}/{n_test} ({nn_pct:.2f}%) [Per-seed: {nn_per_seed}, Mean: {nn_cnt_mean:.2f}]")

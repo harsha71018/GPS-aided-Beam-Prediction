@@ -28,13 +28,14 @@ We extended their KNN and NN baselines by adding Random Forest, XGBoost, and Nai
 
 ---
 
-## Repository Navigation (Three Research Tiers)
+## Repository Architecture & Research Frameworks
 
-This repository documents the chronological progression of our research across three distinct frameworks:
+This repository documents the progression of our research across four distinct frameworks:
 
-| Tier | Directory | Primary Script | Description | Best NN Top-1 | Best Overall Top-1 |
+| Tier / Module | Directory | Primary Script | Description | Primary Metric | Key Finding / Margin |
 |:---|:---|:---|:---|:---:|:---:|
-| 🚀 **Tier 3: Advanced Pipeline (v2)** *(Recommended)* | [`Advanced_Pipeline/`](Advanced_Pipeline/) | `python advanced_loader.py` | Metric UTM kinematics, zero-leakage scaler, CosineAnnealingLR, continuous noise sweep, 14 standardized plots | **43.48%** *(53.20% S1)* | **43.48%** (NN) |
+| 🏆 **Tier 4: Revision Protocol** *(Latest Benchmark)* | [`Revision_Evaluation/`](Revision_Evaluation/) | `python Revision_Evaluation/run_revision_evaluation.py` | Chronological trajectory extrapolation, paired within-seed C-MBB CIs, 10-seed distribution, outage analysis | **35.23%** *(10-seed Night)* | **+10.36 pp margin** (vs. XGB, 3.0x outage cut) |
+| 🚀 **Tier 3: Advanced Pipeline (v2)** | [`Advanced_Pipeline/`](Advanced_Pipeline/) | `python advanced_loader.py` | Metric UTM kinematics, zero-leakage scaler, CosineAnnealingLR, continuous noise sweep, 14 standardized plots | **43.48%** *(53.20% S1)* | **43.48%** (NN spatial interpolation) |
 | 🔧 **Tier 2: Further Tuning** | [`Further tuning/`](Further%20tuning/) | `python tuning_loader.py` | Corrected classical ML beam-ID mapping bug (`clf.classes_`) | **37.28%** | **41.89%** (KNN) |
 | 🎓 **Tier 1: Original Submitted Baseline** | Root `/` | `python Loader.py` | Historical college baseline submitted to Wiley IJCS | **37.28%** | **37.28%** (NN) |
 
