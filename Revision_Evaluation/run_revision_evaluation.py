@@ -5,11 +5,11 @@
 Module: Revision_Evaluation (Tier 4)
 Features:
 - Chronological Trajectory Extrapolation (Deployment Realism)
-- Multi-Seed Evaluation (Seeds: 42, 100, 2024)
-- Circular Moving Block Bootstrap 95% Confidence Intervals
-- Exact 3 dB & 6 dB Outage Probabilities & Two-Sided Fisher Exact Tests
+- Multi-Seed Evaluation (3 Checkpoint Seeds: 42, 100, 2024; Automated 10-Seed Distribution Generator)
+- Circular Moving Block Bootstrap 95% Confidence Intervals (Paired Within-Seed Contrasts)
+- Exact 3 dB & 6 dB Outage Probabilities & Two-Sided Fisher Exact / McNemar Paired Tests
 - Automatic Power Loss CDF Plots (300 DPI)
-- Clean Excel/CSV Summary Tables
+- Clean Summary Tables (Accuracy, Outages, Bootstrap CIs, 10-Seed Distribution)
 
 Can be run directly via Spyder (F5) or terminal:
     python Revision_Evaluation/run_revision_evaluation.py

@@ -359,4 +359,5 @@ If you use this code or findings in your research, please cite:
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+- **Source Code**: Novel algorithms, advanced pipelines (Tier 3), and revision evaluation harnesses (Tier 4) are licensed under the [MIT License](LICENSE).
+- **Data & Upstream Baselines**: The DeepSense 6G dataset files (`Gathered_data_DEV/`) and upstream baseline references are distributed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International ([CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)) License.
