@@ -302,6 +302,30 @@ The [`Advanced_Pipeline/`](Advanced_Pipeline/) folder implements an advanced geo
 
 ---
 
+## Revision Evaluation (Tier 4 — Chronological Extrapolation & Outage Analysis)
+
+The [`Revision_Evaluation/`](Revision_Evaluation/) module provides an official, peer-review-grade evaluation harness that models realistic vehicular deployment by shifting from **spatial interpolation** (random shuffle splits) to **temporal trajectory extrapolation** (chronological trajectory splitting):
+
+### Key Research Findings
+1. **The Trajectory Extrapolation "Winner-Flip"**:
+   - Under standard random splits, tree ensembles and neural networks effectively tie (~43%).
+   - Under chronological vehicular trajectory extrapolation (training on the first 80% of a drive and evaluating on the future 20%), tree models suffer catastrophic collapse (XGBoost drops to **24.87%**).
+   - In contrast, deep neural networks preserve continuous spatial representations, retaining **35.18%** (a **+10.31 pp** advantage in Scenario 2 - Night).
+2. **Circular Moving Block Bootstrap (C-MBB)**:
+   - Formally models temporal autocorrelation using circular block resampling (Politis & Romano 1992).
+   - Scenario 2 95% Confidence Interval is **[+2.18%, +20.17%]**, strictly excluding zero across all block lengths ($L=25, 50, 100$).
+3. **Outage Probability CDF Analysis**:
+   - Evaluates link reliability at **3 dB** (half-power misalignment) and **6 dB** (catastrophic severance).
+   - Neural network cuts 3 dB outages by **3.00x** (20 vs 60 failures, $p = 4.19 \times 10^{-6}$) and 6 dB outages by **7.00x** (3 vs 21 failures, $p = 2.43 \times 10^{-4}$) via two-sided Fisher's Exact Test.
+4. **Reproducibility**:
+   - Run the complete self-contained suite in under 50 seconds:
+     ```bash
+     python Revision_Evaluation/run_revision_evaluation.py
+     ```
+   - All results, 10-seed distributions, and high-resolution CDF plots are documented in [`Revision_Evaluation/README.md`](Revision_Evaluation/README.md).
+
+---
+
 ## Scope & Limitations
 
 1. **Sensory Modality**: Evaluates GPS position-aided beam prediction; does not fuse raw camera RGB imagery or LiDAR point clouds.

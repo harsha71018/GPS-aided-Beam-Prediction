@@ -1,0 +1,17 @@
+Seed,Scenario,Model,Top1_Accuracy_Pct
+42,Scenario 2 (Night),Deep Neural Network,33.45
+100,Scenario 2 (Night),Deep Neural Network,35.63
+2024,Scenario 2 (Night),Deep Neural Network,38.15
+7,Scenario 2 (Night),Deep Neural Network,36.30
+13,Scenario 2 (Night),Deep Neural Network,35.13
+21,Scenario 2 (Night),Deep Neural Network,35.63
+55,Scenario 2 (Night),Deep Neural Network,36.64
+77,Scenario 2 (Night),Deep Neural Network,34.79
+99,Scenario 2 (Night),Deep Neural Network,35.46
+123,Scenario 2 (Night),Deep Neural Network,31.09
+Mean,Scenario 2 (Night),Deep Neural Network,35.23
+Std_Dev,Scenario 2 (Night),Deep Neural Network,1.90
+Standard_Error,Scenario 2 (Night),Deep Neural Network,0.60
+Baseline_XGBoost,Scenario 2 (Night),XGBoost,24.87
+Mean_Margin_pp,Scenario 2 (Night),NN - XGBoost,10.36
+Margin_95pct_t_interval,Scenario 2 (Night),NN - XGBoost,"[+9.00 pp, +11.72 pp]"
