@@ -58,3 +58,8 @@ saved_folder/Advanced_ML_Viz_Seeded_*/
 saved_folder/Advanced_ML_Viz_1789712609/
 saved_folder/Revision_Evaluation_Results/
 run_latest_revision_results.py
+
+# Temporary seed checkpoint generation folders
+.tmp_10_seeds/
+Revision_Evaluation/.tmp_10_seeds/
+
