@@ -13,7 +13,7 @@ Under chronological trajectory extrapolation, the Deep Neural Network achieves *
 In Scenario 2 (Night), the neural network maintains **35.23%** Top-1 accuracy across an expanded 10-seed empirical distribution (`Revision_10_Seed_Distribution.csv`, standard error $\pm 0.60\text{ pp}$) and **35.18%** across the 3 standard benchmark checkpoints, compared to XGBoost at **24.87%** (a **+10.31 pp** to **+10.36 pp** advantage).
 
 Uncertainty is quantified along two independent dimensions:
-1. **Circular Moving-Block Bootstrap (C-MBB)** over the test trajectory (**95% CI [+2.18, +20.17] pp**, $N_{\text{test}} = 595$, strictly excluding zero across all block lengths $L=25, 50, 100$). This frame-sampling uncertainty dominates and constitutes the primary basis of statistical significance.
+1. **Circular Moving-Block Bootstrap (C-MBB)** over the test trajectory (**95% CI [+2.35, +20.17] pp**, $N_{\text{test}} = 595$, strictly excluding zero across all block lengths $L=25, 50, 100$ under paired within-seed resampling). This frame-sampling uncertainty dominates and constitutes the primary basis of statistical significance.
 2. **Seed-to-Seed Optimization Variability** ($\text{SD} = 1.90\text{ pp}$ across 10 independent seeds, standard error $\pm 0.60\text{ pp}$, 95% $t$-interval $[33.87\%, 36.59\%]$). This confirms the performance advantage is robust against weight initialization stochasticity.
 
 ### Environmental Propagation Regimes
@@ -22,7 +22,7 @@ Uncertainty is quantified along two independent dimensions:
 * **Scenario 2 (Night, $N_{\text{test}} = 595$) — Multipath & Low-Light Dynamic Scattering (Robust Advantage)**:
   Under complex nocturnal multipath conditions without visual cues, non-linear reflections and shadowing degrade spatial bijectivity. Rigid orthogonal decision trees fail to extrapolate into unseen terminal coordinates ($24.87\%$), whereas the continuous inductive bias of deep neural networks preserves smooth spatial tracking ($35.23\%$, $35.18\%$), delivering a **robust +10.31 pp margin** and cutting 3 dB beam misalignment outages by **$3.00\times$** ($10.08\%$ down to $3.36\%$, $p = 4.19 \times 10^{-6}$ via two-sided Fisher's Exact Test). C-MBB 95% confidence intervals strictly exclude zero across all block lengths ($L=25, 50, 100$).
 * **Scenario 3 (Day-B, $N_{\text{test}} = 298$) — Urban Canyon & Blockage (Marginal Directional Trend)**:
-  In the shorter Day-B trajectory, the neural network exhibits a $+6.94\text{ pp}$ margin ($30.76\%$ vs. $23.83\%$) and modest outage reduction ($17.79\%$ to $14.09\%$, $p = 0.2631$). While directionally consistent with Scenario 2, the advantage is statistically marginal due to smaller test sample size ($N_{\text{test}} = 298$), with C-MBB intervals crossing zero at larger block lengths ($L=50: [+0.00\%, +13.09\%]$; $L=100: [-0.34\%, +12.08\%]$). We report this result transparently as a non-significant directional trend rather than a conclusive margin.
+  In the shorter Day-B trajectory, the neural network exhibits a $+6.94\text{ pp}$ margin ($30.76\%$ vs. $23.83\%$) and modest outage reduction ($17.79\%$ to $14.09\%$, $p = 0.2631$). While directionally consistent with Scenario 2, the advantage is statistically marginal due to smaller test sample size ($N_{\text{test}} = 298$), with C-MBB intervals crossing zero at larger block lengths ($L=100: [-0.34\%, +12.42\%]$). We report this result transparently as a non-significant directional trend rather than a conclusive margin.
 
 ---
 
@@ -40,16 +40,16 @@ Uncertainty is quantified along two independent dimensions:
 > **Note on Scenario 2 Seed Reporting**: The 3-checkpoint benchmark mean is 35.18% (+10.31 pp margin), and the expanded 10-seed distribution mean is 35.23% ($\text{SD} = 1.90\text{ pp}$, $\text{SE} = \pm 0.60\text{ pp}$, +10.36 pp margin), demonstrating that NN superiority is invariant to optimization stochasticity. In Scenario 1 at 6 dB threshold, zero NN outage events were recorded (`n/a (0 events)`).
 
 ### Table 2: Circular Moving Block Bootstrap 95% Confidence Intervals
-*(Generated from `Revision_Bootstrap_CI_Summary.csv`)*
+*(Generated from `Revision_Bootstrap_CI_Summary.csv` — Paired Within-Seed Contrast)*
 
 | Scenario | Block Length ($L$) | Mean Margin | 95% Confidence Interval | Standard Error | Excludes Zero? |
 | :--- | :---: | :---: | :---: | :---: | :---: |
-| **Scenario 2 (Night)** | $L = 25$ frames | +10.31 pp | **[+1.34%, +20.50%]** | 4.98% | **True** |
-| **Scenario 2 (Night)** | $L = 50$ frames | +10.31 pp | **[+1.68%, +20.67%]** | 4.98% | **True** |
-| **Scenario 2 (Night)** | $L = 100$ frames | +10.31 pp | **[+2.18%, +20.17%]** | 4.60% | **True** |
-| **Scenario 3 (Day-B)** | $L = 25$ frames | +6.94 pp | [+0.34%, +13.09%] | 3.28% | **True** |
-| **Scenario 3 (Day-B)** | $L = 50$ frames | +6.94 pp | [+0.00%, +13.09%] | 3.29% | False |
-| **Scenario 3 (Day-B)** | $L = 100$ frames | +6.94 pp | [-0.34%, +12.08%] | 3.26% | False |
+| **Scenario 2 (Night)** | $L = 25$ frames | +10.31 pp | **[+1.34%, +20.50%]** | 4.92% | **True** |
+| **Scenario 2 (Night)** | $L = 50$ frames | +10.31 pp | **[+1.68%, +20.67%]** | 4.97% | **True** |
+| **Scenario 2 (Night)** | $L = 100$ frames | +10.31 pp | **[+2.35%, +20.17%]** | 4.58% | **True** |
+| **Scenario 3 (Day-B)** | $L = 25$ frames | +6.94 pp | [+0.00%, +13.42%] | 3.30% | False |
+| **Scenario 3 (Day-B)** | $L = 50$ frames | +6.94 pp | [+0.34%, +13.09%] | 3.29% | **True** |
+| **Scenario 3 (Day-B)** | $L = 100$ frames | +6.94 pp | [-0.34%, +12.42%] | 3.23% | False |
 
 ---
 
@@ -62,9 +62,9 @@ python Revision_Evaluation/run_revision_evaluation.py
 ```
 
 ### Module Contents
-* `revision_train_test_func.py`: Self-contained 7-feature continuous trigonometric feature extraction ($\sin \theta, \cos \theta, \text{Range}, \Delta x, \Delta y$), leakage-free scaler, and neural network definition.
-* `run_revision_evaluation.py`: Reproducible evaluation runner.
+* `revision_train_test_func.py`: Self-contained 7-feature continuous trigonometric feature extraction ($\sin \theta, \cos \theta, \text{Range}, \Delta x, \Delta y$), leakage-free scaler, neural network definition, and self-contained training/evaluation routines.
+* `run_revision_evaluation.py`: Reproducible evaluation runner with within-seed paired C-MBB bootstrap and automated 10-seed generator.
 * `Revision_Accuracy_and_Outage_Summary.csv`: Sample counts, accuracies, and Fisher exact tests.
 * `Revision_Bootstrap_CI_Summary.csv`: Moving Block Bootstrap intervals across block lengths.
-* `Revision_10_Seed_Distribution.csv`: 10-seed empirical distribution data ($N=10$).
+* `Revision_10_Seed_Distribution.csv`: 10-seed empirical distribution data ($N=10$), automatically verified or regenerated by `run_revision_evaluation.py`.
 * `Power_Loss_CDF_Scenario_*.png`: 300 DPI publication-grade beam power loss CDF curves.

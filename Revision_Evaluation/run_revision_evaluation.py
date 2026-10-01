@@ -53,6 +53,93 @@ print(f"Output Directory:  {output_dir}")
 print("=" * 80)
 
 # ------------------------------------------------------------------------------
+# 10-Seed Empirical Distribution Generator for Scenario 2
+# ------------------------------------------------------------------------------
+def ensure_10_seed_distribution(data_dir, output_dir, device):
+    """
+    Ensures Revision_10_Seed_Distribution.csv exists.
+    If absent or if --retrain-10-seeds is specified, automatically trains the NN
+    across 10 random seeds on Scenario 2 and writes the CSV.
+    """
+    dist_csv = os.path.join(output_dir, "Revision_10_Seed_Distribution.csv")
+    if os.path.exists(dist_csv) and "--retrain-10-seeds" not in sys.argv:
+        return dist_csv
+
+    print("\n>>> Generating Revision_10_Seed_Distribution.csv for Scenario 2 (Night)... <<<", flush=True)
+    files = os.listdir(data_dir)
+    p1_f = [f for f in files if "scenario2_unit1_loc" in f][0]
+    pwr_f = [f for f in files if "scenario2_unit1_pwr" in f][0]
+    p2_f = [f for f in files if "scenario2_unit2_loc" in f and "cal" not in f][0]
+
+    pos1 = np.load(os.path.join(data_dir, p1_f))[:, :2]
+    pos2 = np.load(os.path.join(data_dir, p2_f))[:, :2]
+    pwr1 = np.load(os.path.join(data_dir, pwr_f))
+
+    clean_features, _ = func.extract_kinematic_features(pos1, pos2)
+    beam_idxs = np.arange(0, pwr1.shape[-1], pwr1.shape[-1] // 64)
+    beam_pwrs = pwr1[:, beam_idxs]
+    beam_labels = np.argmax(beam_pwrs, axis=1)
+
+    x_train, x_test, y_train, y_test, _, _, _ = func.split_and_scale_data(
+        clean_features, beam_labels, split_mode="chronological", test_size=0.2, random_state=42
+    )
+    cut = int(len(x_train) * 0.75)
+    x_tr, y_tr = x_train[:cut], y_train[:cut]
+    x_val, y_val = x_train[cut:], y_train[cut:]
+
+    seeds_10 = [42, 100, 2024, 7, 13, 21, 55, 77, 99, 123]
+    records = []
+    accs = []
+    tmp_dir = os.path.join(output_dir, ".tmp_10_seeds")
+
+    for i, s in enumerate(seeds_10, 1):
+        torch.manual_seed(s)
+        np.random.seed(s)
+        if torch.cuda.is_available():
+            torch.cuda.manual_seed_all(s)
+        model = func.Advanced_NN_FCN(num_features=7, num_output=64, nodes_per_layer=256, n_layers=5, dropout_rate=0.2)
+        s_folder = os.path.join(tmp_dir, f"seed_{s}")
+        m_path = func.train_net(
+            x_tr, y_tr, x_val, y_val, s_folder,
+            num_epochs=50, model=model, batch_size=32, lr=0.005, weight_decay=1e-5
+        )
+        model.load_state_dict(torch.load(m_path, map_location=device, weights_only=True))
+        pred_beams = func.test_net(x_test, model, top_k=1)[:, 0]
+        acc = np.mean(pred_beams == y_test) * 100.0
+        accs.append(acc)
+        records.append({
+            "Seed": s,
+            "Scenario": "Scenario 2 (Night)",
+            "Model": "Deep Neural Network",
+            "Top1_Accuracy_Pct": round(float(acc), 2)
+        })
+        print(f"  [10-Seed Generator] Seed {s:4d} [{i:2d}/10] -> Top-1: {acc:.2f}%")
+
+    import shutil
+    shutil.rmtree(tmp_dir, ignore_errors=True)
+
+    mean_acc = np.mean(accs)
+    std_acc = np.std(accs, ddof=1)
+    se_acc = std_acc / np.sqrt(len(accs))
+    baseline_xgb = 24.87
+    margin_10 = mean_acc - baseline_xgb
+    ci_t = stats.t.interval(0.95, df=len(accs)-1, loc=margin_10, scale=se_acc)
+
+    records.extend([
+        {"Seed": "Mean", "Scenario": "Scenario 2 (Night)", "Model": "Deep Neural Network", "Top1_Accuracy_Pct": round(float(mean_acc), 2)},
+        {"Seed": "Std_Dev", "Scenario": "Scenario 2 (Night)", "Model": "Deep Neural Network", "Top1_Accuracy_Pct": round(float(std_acc), 2)},
+        {"Seed": "Standard_Error", "Scenario": "Scenario 2 (Night)", "Model": "Deep Neural Network", "Top1_Accuracy_Pct": round(float(se_acc), 2)},
+        {"Seed": "Baseline_XGBoost", "Scenario": "Scenario 2 (Night)", "Model": "XGBoost", "Top1_Accuracy_Pct": round(float(baseline_xgb), 2)},
+        {"Seed": "Mean_Margin_pp", "Scenario": "Scenario 2 (Night)", "Model": "NN - XGBoost", "Top1_Accuracy_Pct": round(float(margin_10), 2)},
+        {"Seed": "Margin_95pct_t_interval", "Scenario": "Scenario 2 (Night)", "Model": "NN - XGBoost", "Top1_Accuracy_Pct": f"[{ci_t[0]:+.2f} pp, {ci_t[1]:+.2f} pp]"}
+    ])
+
+    pd.DataFrame(records).to_csv(dist_csv, index=False)
+    print(f"[10-Seed Generator Saved]: {dist_csv}\n")
+    return dist_csv
+
+
+# ------------------------------------------------------------------------------
 # Benchmark Execution Across Scenarios
 # ------------------------------------------------------------------------------
 scenarios = [1, 2, 3]
@@ -168,9 +255,9 @@ for scen_idx in scenarios:
         "Margin_pp": round(float(margin), 2)
     }
 
-    # For Scenario 2, incorporate the verified 10-seed sensitivity distribution
+    # For Scenario 2, ensure 10-seed distribution is present and incorporate it
     if scen_idx == 2:
-        dist_csv = os.path.join(output_dir, "Revision_10_Seed_Distribution.csv")
+        dist_csv = ensure_10_seed_distribution(data_dir, output_dir, device)
         if os.path.exists(dist_csv):
             df_dist = pd.read_csv(dist_csv)
             nn_10_raw = df_dist[df_dist["Model"] == "Deep Neural Network"]["Top1_Accuracy_Pct"].values[:10]
@@ -185,16 +272,15 @@ for scen_idx in scenarios:
     print(f"  NN Top-1:       {mean_nn_acc:.2f}% (Seed variance: {[round(float(a), 2) for a in nn_accs]}%)")
     print(f"  Margin (NN - XGB): {margin:+.2f} percentage points")
 
-    # C. Circular Moving Block Bootstrap (95% CI & Standard Errors)
-    print(f"\n[Circular Moving Block Bootstrap (5000 resamples)]")
+    # C. Circular Moving Block Bootstrap (95% CI & Standard Errors - Paired within-seed contrast)
+    print(f"\n[Circular Moving Block Bootstrap (5000 resamples - Paired Within-Seed)]")
     for L in [25, 50, 100]:
         np.random.seed(42)
         diffs = []
         for _ in range(5000):
             b = func.circular_mbb_indices(n_test, L)
-            s_nn = np.random.randint(0, len(seeds))
-            s_xgb = np.random.randint(0, len(seeds))
-            diffs.append((nn_preds[s_nn][b] == y_te[b]).mean()*100 - (xgb_preds[s_xgb][b] == y_te[b]).mean()*100)
+            s = np.random.randint(0, len(seeds))  # Paired within-seed draw
+            diffs.append((nn_preds[s][b] == y_te[b]).mean()*100 - (xgb_preds[s][b] == y_te[b]).mean()*100)
         diffs = np.array(diffs)
         ci = np.percentile(diffs, [2.5, 97.5])
         se = np.std(diffs)

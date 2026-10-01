@@ -313,7 +313,7 @@ The [`Revision_Evaluation/`](Revision_Evaluation/) module provides an official, 
    - In contrast, deep neural networks preserve continuous spatial representations, retaining **35.23%** (a robust **+10.31 pp to +10.36 pp** advantage in Scenario 2 - Night; 10-seed distribution mean: **35.23%**, 3-checkpoint mean: **35.18%**).
 2. **Circular Moving Block Bootstrap (C-MBB)**:
    - Formally models temporal autocorrelation using circular block resampling (Politis & Romano 1992).
-   - Scenario 2 95% Confidence Interval is **[+2.18%, +20.17%]**, strictly excluding zero across all block lengths ($L=25, 50, 100$).
+   - Scenario 2 95% Confidence Interval is **[+2.35%, +20.17%]**, strictly excluding zero across all block lengths ($L=25, 50, 100$).
 3. **Outage Probability CDF Analysis**:
    - Evaluates link reliability at **3 dB** (half-power misalignment) and **6 dB** (catastrophic severance).
    - Neural network cuts 3 dB outages by **3.00x** (20 vs 60 failures, $p = 4.19 \times 10^{-6}$) and 6 dB outages by **7.00x** (3 vs 21 failures, $p = 2.43 \times 10^{-4}$) via two-sided Fisher's Exact Test.

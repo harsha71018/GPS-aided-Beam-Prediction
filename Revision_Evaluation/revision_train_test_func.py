@@ -171,3 +171,56 @@ def test_net(x_test, model, top_k=1):
         outputs = model(x_tensor)
         top_k_preds = torch.topk(outputs, top_k, dim=1).indices.cpu().numpy()
     return top_k_preds
+
+
+def train_net(x_train, y_train, x_val, y_val, run_folder, num_epochs=50, model=None,
+              batch_size=32, lr=0.005, weight_decay=1e-5, backup_best_model=True):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    if model is None:
+        model = Advanced_NN_FCN(num_features=x_train.shape[1], num_output=64, nodes_per_layer=256, n_layers=5, dropout_rate=0.2)
+    model.to(device)
+
+    criterion = nn.CrossEntropyLoss()
+    optimizer = optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=num_epochs, eta_min=1e-5)
+
+    train_loader = DataLoader(BeamDataset(x_train, y_train), batch_size=batch_size, shuffle=True, drop_last=True)
+    val_loader = DataLoader(BeamDataset(x_val, y_val), batch_size=batch_size, shuffle=False)
+
+    best_acc = 0.0
+    os.makedirs(run_folder, exist_ok=True)
+    best_model_path = os.path.join(run_folder, 'best_model.pth')
+
+    for epoch in range(num_epochs):
+        model.train()
+        for inputs, labels in train_loader:
+            inputs, labels = inputs.to(device), labels.to(device)
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+        scheduler.step()
+
+        model.eval()
+        correct, total = 0, 0
+        with torch.no_grad():
+            for inputs, labels in val_loader:
+                inputs, labels = inputs.to(device), labels.to(device)
+                outputs = model(inputs)
+                _, predicted = torch.max(outputs.data, 1)
+                total += labels.size(0)
+                correct += (predicted == labels).sum().item()
+
+        val_acc = 100.0 * correct / total
+        if val_acc > best_acc:
+            best_acc = val_acc
+            if backup_best_model:
+                torch.save(model.state_dict(), best_model_path)
+
+    if not backup_best_model or not os.path.exists(best_model_path):
+        torch.save(model.state_dict(), best_model_path)
+
+    return best_model_path
+
