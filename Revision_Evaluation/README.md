@@ -44,6 +44,9 @@ Uncertainty is quantified along two independent dimensions:
 
 | Scenario | Block Length ($L$) | Mean Margin | 95% Confidence Interval | Standard Error | Excludes Zero? |
 | :--- | :---: | :---: | :---: | :---: | :---: |
+| **Scenario 1 (Day-A)** | $L = 25$ frames | +0.21 pp | [-4.12%, +4.74%] | 2.26% | False |
+| **Scenario 1 (Day-A)** | $L = 50$ frames | +0.21 pp | [-3.30%, +3.92%] | 1.86% | False |
+| **Scenario 1 (Day-A)** | $L = 100$ frames | +0.21 pp | [-3.09%, +3.71%] | 1.76% | False |
 | **Scenario 2 (Night)** | $L = 25$ frames | +10.31 pp | **[+1.34%, +20.50%]** | 4.92% | **True** |
 | **Scenario 2 (Night)** | $L = 50$ frames | +10.31 pp | **[+1.68%, +20.67%]** | 4.97% | **True** |
 | **Scenario 2 (Night)** | $L = 100$ frames | +10.31 pp | **[+2.35%, +20.17%]** | 4.58% | **True** |

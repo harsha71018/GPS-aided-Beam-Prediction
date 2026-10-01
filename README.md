@@ -357,6 +357,6 @@ If you use this code or findings in your research, please cite:
 
 ---
 
-## License & Usage
+## License
 
-This repository is provided strictly for academic, peer-review, and research evaluation purposes. All rights are reserved by the authors.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
