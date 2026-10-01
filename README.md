@@ -35,7 +35,7 @@ This repository documents the chronological progression of our research across t
 | Tier | Directory | Primary Script | Description | Best NN Top-1 | Best Overall Top-1 |
 |:---|:---|:---|:---|:---:|:---:|
 | 🚀 **Tier 3: Advanced Pipeline (v2)** *(Recommended)* | [`Advanced_Pipeline/`](Advanced_Pipeline/) | `python advanced_loader.py` | Metric UTM kinematics, zero-leakage scaler, CosineAnnealingLR, continuous noise sweep, 14 standardized plots | **43.48%** *(53.20% S1)* | **43.48%** (NN) |
-| 🔧 **Tier 2: Further Tuning** | [`Further tuning/`](Further%20tuning/) | `python deepseekv4pro_loader.py` | Corrected classical ML beam-ID mapping bug (`clf.classes_`) | **37.28%** | **41.89%** (KNN) |
+| 🔧 **Tier 2: Further Tuning** | [`Further tuning/`](Further%20tuning/) | `python tuning_loader.py` | Corrected classical ML beam-ID mapping bug (`clf.classes_`) | **37.28%** | **41.89%** (KNN) |
 | 🎓 **Tier 1: Original Submitted Baseline** | Root `/` | `python Loader.py` | Historical college baseline submitted to Wiley IJCS | **37.28%** | **37.28%** (NN) |
 
 ---
@@ -121,11 +121,11 @@ Gathered_data_DEV/
 ├── requirements.txt                 # Project Python dependencies
 ├── Gathered_data_DEV/               # Dataset directory (.npy files — download separately)
 ├── Further tuning/                  # Tier 2: Bug-fixed classical ML framework
-│   ├── deepseekv4pro_loader.py      # Refined main pipeline with clf.classes_ fix
-│   ├── deepseekv4pro_train_test_func.py
-│   ├── deepseelv4pro_check_env_file.py
+│   ├── tuning_loader.py             # Refined main pipeline with clf.classes_ fix
+│   ├── tuning_train_test_func.py
+│   ├── tuning_check_env.py
 │   └── Final_ML_Viz_1779380116/     # Post-fix benchmark outputs (13 plots + CSV)
-├── Advanced_Pipeline/               # Tier 3: State-of-the-art geometric framework (v2)
+├── Advanced_Pipeline/               # Tier 3: Advanced geometric & kinematic framework (v2)
 │   ├── advanced_loader.py           # Upgraded execution pipeline (14 plots + 2 CSVs)
 │   ├── advanced_train_test_func.py  # UTM kinematics, zero-leakage scaler, AdamW
 │   ├── advanced_check_env.py        # Environment & GPU verification script
@@ -171,7 +171,7 @@ This generates all **14 standardized visual outputs**, including the Continuous 
 ### 🔧 Run Further Tuning (Tier 2)
 ```bash
 cd "Further tuning"
-python deepseekv4pro_loader.py
+python tuning_loader.py
 ```
 
 ### 🎓 Run Original Submitted Baseline (Tier 1)
@@ -184,7 +184,7 @@ python Loader.py
 
 ## Reproducibility
 
-All experiments lock random seeds (`seed=42`) for bit-exact reproducibility across:
+All experiments lock random seeds (`seed=42`) for deterministic, seed-controlled execution across:
 - Python `random` module
 - NumPy random generator
 - PyTorch CPU and CUDA engines
@@ -211,7 +211,7 @@ The [`Further tuning/`](Further%20tuning/) folder documents an important validat
 ### What Changed
 The original college baseline (`Loader.py`) contained a **class index mapping bug** in the classical ML models (KNN, RF, XGB, NB). In scikit-learn / XGBoost, `predict_proba()` returns probabilities ordered by the classes present in the training set, not necessarily absolute beam indices $0..63$. The original baseline inadvertently treated probability column index $j$ as beam ID $j$, which produced severe mismatches whenever the training partition did not span all 64 classes.
 
-**Fix Applied** (in `deepseekv4pro_loader.py`):
+**Fix Applied** (in `tuning_loader.py`):
 ```python
 # Before (incorrect):
 pred_beams = np.argsort(pred_probs, axis=1)[:, ::-1]
@@ -265,7 +265,7 @@ All models remain well below the 3 dB practical outage threshold.
 
 ## Advanced Pipeline (v2 — Geometric & Kinematic Framework)
 
-The [`Advanced_Pipeline/`](Advanced_Pipeline/) folder represents the premier evolution of this research:
+The [`Advanced_Pipeline/`](Advanced_Pipeline/) folder implements an advanced geometric and kinematic framework:
 
 ### Key Architectural Advancements
 1. **Kinematic & Geometric Feature Engineering**:
@@ -290,6 +290,14 @@ The [`Advanced_Pipeline/`](Advanced_Pipeline/) folder represents the premier evo
 | **Average Power Loss (NN)** | 0.85 dB | 0.85 dB | **0.62 dB** | **0.23 dB in Scen 1** |
 | **1m Noise Drop (NN)** | 11.23% | 11.23% | **7.79%** | **+3.44% noise resilience** |
 | **Inference Latency** | $<1\text{ ms}$ | $<1\text{ ms}$ | **$20\text{ }\mu\text{s}$ (NN)** | Sub-millisecond edge ready |
+
+---
+
+## Scope & Limitations
+
+1. **Sensory Modality**: Evaluates GPS position-aided beam prediction; does not fuse raw camera RGB imagery or LiDAR point clouds.
+2. **Environment Scope**: Benchmarked across three outdoor V2I scenarios from the DeepSense 6G dataset. Generalization to unseen cities or non-vehicular indoor topologies requires domain adaptation.
+3. **Hardware Latency**: The reported $20\text{ }\mu\text{s}$ NN inference latency is hardware-dependent (GPU benchmark); embedded edge DSP/FPGA timings will vary with quantization and integer precision.
 
 ---
 

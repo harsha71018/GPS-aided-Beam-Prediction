@@ -83,7 +83,7 @@ def add_pos_noise_utm(pos_veh, noise_std_m=1.0):
 def split_and_scale_data(features, labels, split_mode='random', test_size=0.2, random_state=42):
     """
     Splits features and applies StandardScaler fitted STRICTLY on the training split.
-    - 'random': Standard random stratified shuffle
+    - 'random': Standard random shuffle split
     - 'chronological': First (1 - test_size) for train, last test_size for test
     """
     n_samples = len(features)

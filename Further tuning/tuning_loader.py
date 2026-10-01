@@ -31,7 +31,7 @@ import pandas as pd
 import seaborn as sns
 from math import pi
 import itertools
-import deepseekv4pro_train_test_func as func
+import tuning_train_test_func as func
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
