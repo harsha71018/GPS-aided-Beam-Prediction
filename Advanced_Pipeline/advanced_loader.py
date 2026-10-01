@@ -10,6 +10,7 @@ Features:
 """
 
 import os
+import sys
 import time
 import random
 import itertools
@@ -104,12 +105,22 @@ gathered_data_folder = _cand_data_local if os.path.exists(_cand_data_local) else
 
 if not os.path.exists(gathered_data_folder) or len([f for f in os.listdir(gathered_data_folder) if f.endswith('.npy')]) == 0:
     print("\n" + "=" * 70)
-    print("[ERROR] DeepSense 6G Dataset not found or empty!")
+    print("[ERROR] DeepSense 6G Dataset folder 'Gathered_data_DEV/' not found or empty!")
     print(f"Target path checked: {gathered_data_folder}")
     print("Please download the position-aided subset from: https://deepsense6g.net")
     print("and place the .npy files into 'Gathered_data_DEV/' before running.")
     print("=" * 70 + "\n")
-    import sys
+    sys.exit(1)
+
+# Verify all 3 scenarios are present to avoid partial runtime failure
+_files = os.listdir(gathered_data_folder)
+_missing_scens = [s for s in [1, 2, 3] if not any(f"scenario{s}_" in f for f in _files)]
+if _missing_scens:
+    print("\n" + "=" * 70)
+    print(f"[ERROR] Incomplete dataset: Missing files for Scenario(s) {_missing_scens}!")
+    print(f"Directory: {gathered_data_folder}")
+    print("Please ensure all 3 scenarios are downloaded from https://deepsense6g.net.")
+    print("=" * 70 + "\n")
     sys.exit(1)
 
 _base_dir = os.getcwd() if os.path.basename(os.getcwd()) != 'Advanced_Pipeline' else os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))

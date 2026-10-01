@@ -90,6 +90,15 @@ This project uses the **DeepSense 6G** position-aided beam prediction dataset:
   - Scenario 2: V2I Night
   - Scenario 3: V2I Day - Location B
 
+### Data Partitions & Sample Sizes
+
+| Scenario | Operational Environment | Total Samples ($N$) | Training Set ($80\%$) | Test Evaluation Set ($20\%$) |
+|:---|:---|:---:|:---:|:---:|
+| **Scenario 1** | V2I Day - Location A | 2,422 | 1,937 | **485** ($0.206\%$ / sample) |
+| **Scenario 2** | V2I Night | 2,974 | 2,379 | **595** ($0.168\%$ / sample) |
+| **Scenario 3** | V2I Day - Location B | 1,487 | 1,189 | **298** ($0.336\%$ / sample) |
+| **Total Benchmark** | Multi-environment V2I testbed | **6,883** | **5,505** | **1,378** |
+
 ### Data Setup
 
 1. Download the position-aided subset from [DeepSense 6G](https://deepsense6g.net).
