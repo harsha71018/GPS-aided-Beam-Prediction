@@ -102,6 +102,16 @@ _cand_data_local = os.path.join(os.getcwd(), 'Gathered_data_DEV')
 _cand_data_parent = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Gathered_data_DEV'))
 gathered_data_folder = _cand_data_local if os.path.exists(_cand_data_local) else _cand_data_parent
 
+if not os.path.exists(gathered_data_folder) or len([f for f in os.listdir(gathered_data_folder) if f.endswith('.npy')]) == 0:
+    print("\n" + "=" * 70)
+    print("[ERROR] DeepSense 6G Dataset not found or empty!")
+    print(f"Target path checked: {gathered_data_folder}")
+    print("Please download the position-aided subset from: https://deepsense6g.net")
+    print("and place the .npy files into 'Gathered_data_DEV/' before running.")
+    print("=" * 70 + "\n")
+    import sys
+    sys.exit(1)
+
 _base_dir = os.getcwd() if os.path.basename(os.getcwd()) != 'Advanced_Pipeline' else os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 save_folder = os.path.join(_base_dir, f'saved_folder/Advanced_ML_Viz_{int(time.time())}')
 

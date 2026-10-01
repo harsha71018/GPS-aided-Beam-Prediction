@@ -57,17 +57,17 @@ def extract_kinematic_features(pos_bs, pos_veh):
 # ==============================================================================
 def add_pos_noise_utm(pos_veh, noise_std_m=1.0):
     """
-    Applies isotropic Gaussian perturbation directly in UTM metric coordinates,
+    Applies isotropic 2D Gaussian perturbation directly in UTM metric coordinates,
     then transforms back to lat/lon.
+    Direct Cartesian sampling (dx, dy ~ N(0, noise_std_m^2)) ensures exact per-axis
+    variance and rotationally invariant isotropic perturbation.
     """
     if noise_std_m <= 0:
         return pos_veh.copy()
 
     n_samples = pos_veh.shape[0]
-    r = np.abs(np.random.normal(0, noise_std_m, n_samples))
-    theta = np.random.uniform(0, 2 * np.pi, n_samples)
-    dx_noise = r * np.cos(theta)
-    dy_noise = r * np.sin(theta)
+    dx_noise = np.random.normal(0, noise_std_m, n_samples)
+    dy_noise = np.random.normal(0, noise_std_m, n_samples)
 
     x, y, zn, zl = utm.from_latlon(pos_veh[:, 0], pos_veh[:, 1])
     noisy_x = x + dx_noise
