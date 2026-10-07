@@ -8,28 +8,28 @@ It provides a fully reproducible evaluation harness that models realistic vehicu
 
 ## 1. Core Findings & Physical Insights
 
-Under chronological trajectory extrapolation, the Deep Neural Network achieves **a robust +10.31 pp to +10.36 pp margin in night conditions (Scenario 2)**, with a **marginal and directionally consistent +6.94 pp in Day-B (Scenario 3)**.
+Under chronological trajectory extrapolation, the Deep Neural Network achieves **a robust +10.31 pp margin over XGBoost (+6.38 pp over Random Forest) in night conditions (Scenario 2)**, and a **+6.94 pp margin over XGBoost (+8.61 pp over Random Forest) in Day-B (Scenario 3)**.
 
-In Scenario 2 (Night), the neural network maintains **35.23%** Top-1 accuracy across an expanded 10-seed empirical distribution (`Revision_10_Seed_Distribution.csv`, standard error $\pm 0.60\text{ pp}$) and **35.18%** across the 3 standard benchmark checkpoints, compared to XGBoost at **24.87%** (a **+10.31 pp** to **+10.36 pp** advantage).
+In Scenario 2 (Night), the neural network maintains **35.23%** Top-1 accuracy across an expanded 10-seed empirical distribution (`Revision_10_Seed_Distribution.csv`, standard error $\pm 0.60\text{ pp}$) and **35.18%** across the 3 standard benchmark checkpoints, compared to XGBoost at **24.87%** (a **+10.31 pp** advantage vs. XGBoost) and Random Forest at **28.80%** (a **+6.38 pp** advantage vs. RF).
 
 Uncertainty is quantified along two independent dimensions:
-1. **Circular Moving-Block Bootstrap (C-MBB)** over the test trajectory (**95% CI [+2.35, +20.17] pp**, $N_{\text{test}} = 595$, strictly excluding zero across all block lengths $L=25, 50, 100$ under paired within-seed resampling). This frame-sampling uncertainty dominates and constitutes the primary basis of statistical significance.
+1. **Circular Moving-Block Bootstrap (C-MBB)** over the test trajectory (**95% CI [+2.35, +20.17] pp** vs. XGBoost, $N_{\text{test}} = 595$, strictly excluding zero across all block lengths $L=25, 50, 100$ under paired within-seed resampling). This frame-sampling uncertainty dominates and constitutes the primary basis of statistical significance.
 2. **Seed-to-Seed Optimization Variability** ($\text{SD} = 1.90\text{ pp}$ across 10 independent seeds, standard error $\pm 0.60\text{ pp}$, 95% $t$-interval $[33.87\%, 36.59\%]$). This confirms the performance advantage is robust against weight initialization stochasticity.
 
 ### Environmental Propagation Regimes
 * **Scenario 1 (Day-A, $N_{\text{test}} = 485$) — Open Line-of-Sight (LOS)**:
-  On simple straight daylight paths, coordinate-to-beam correspondence is geometrically direct. Both tree ensembles and neural networks achieve equivalent accuracy (**48.45% vs. 48.66%**, a $+0.21\text{ pp}$ tie).
+  On simple straight daylight paths, coordinate-to-beam correspondence is geometrically direct. Both tree ensembles and neural networks achieve equivalent accuracy (**48.45% vs. 48.66%**, within 0.8 pp of Random Forest at 48.73%).
 * **Scenario 2 (Night, $N_{\text{test}} = 595$) — Multipath & Low-Light Dynamic Scattering (Robust Advantage)**:
-  Under complex nocturnal multipath conditions without visual cues, non-linear reflections and shadowing degrade spatial bijectivity. Rigid orthogonal decision trees fail to extrapolate into unseen terminal coordinates ($24.87\%$), whereas the continuous inductive bias of deep neural networks preserves smooth spatial tracking ($35.23\%$, $35.18\%$), delivering a **robust +10.31 pp margin** and cutting 3 dB beam misalignment outages by **$3.00\times$** ($10.08\%$ down to $3.36\%$, $p = 4.19 \times 10^{-6}$ via two-sided Fisher's Exact Test; corroborated under matched-pairs McNemar test on the 3-checkpoint mean per-frame loss with $b=53, c=3 \implies p = 8.14 \times 10^{-13}$, while all three prespecified checkpoint seeds individually yield $p < 1.4 \times 10^{-7}$ across the 595 physical test frames). C-MBB 95% confidence intervals strictly exclude zero across all block lengths ($L=25, 50, 100$).
-* **Scenario 3 (Day-B, $N_{\text{test}} = 298$) — Urban Canyon & Blockage (Marginal Directional Trend)**:
-  In the shorter Day-B trajectory, the neural network exhibits a $+6.94\text{ pp}$ margin ($30.76\%$ vs. $23.83\%$) and modest outage reduction ($17.79\%$ to $14.09\%$, $p = 0.2631$). While directionally consistent with Scenario 2, the advantage is statistically marginal due to smaller test sample size ($N_{\text{test}} = 298$), with C-MBB intervals touching or crossing zero at two of the three block lengths ($L=25: [+0.00\%, +13.42\%]$; $L=100: [-0.34\%, +12.42\%]$, and significant only at $L=50: [+0.34\%, +13.09\%]$). We report this result transparently as a marginal, directionally consistent trend rather than a conclusive margin.
+  Under complex nocturnal multipath conditions without visual cues, non-linear reflections and shadowing degrade spatial bijectivity. Decision tree models drop on later passes over the roadway (XGBoost achieves $24.87\%$, Random Forest achieves $28.80\%$), whereas deep neural networks maintain $35.18\%$ (10-seed mean $35.23\%$), delivering a **+6.38 pp margin over Random Forest and +10.31 pp over XGBoost**. The NN cuts 3 dB beam misalignment outages by **$3.00\times$** ($10.08\%$ down to $3.36\%$, $p = 4.19 \times 10^{-6}$ via two-sided Fisher's Exact Test; corroborated under matched-pairs McNemar test on the 3-checkpoint mean per-frame loss with $b=53, c=3 \implies p = 8.14 \times 10^{-13}$, while all three prespecified checkpoint seeds individually yield $p < 1.4 \times 10^{-7}$ across the 595 physical test frames). C-MBB 95% confidence intervals strictly exclude zero across all block lengths ($L=25, 50, 100$).
+* **Scenario 3 (Day-B, $N_{\text{test}} = 298$) — Urban Canyon & Blockage (Directional Trend)**:
+  In the shorter Day-B trajectory, the neural network exhibits a $+6.94\text{ pp}$ margin over XGBoost ($30.76\%$ vs. $23.83\%$) and $+8.61\text{ pp}$ over Random Forest ($22.15\%$), with modest outage reduction ($17.79\%$ to $14.09\%$, $p = 0.2631$). While directionally consistent with Scenario 2, the advantage has wider uncertainty due to smaller test sample size ($N_{\text{test}} = 298$), with C-MBB intervals touching or crossing zero at two of the three block lengths ($L=25: [+0.00\%, +13.42\%]$; $L=100: [-0.34\%, +12.42\%]$, and significant at $L=50: [+0.34\%, +13.09\%]$). We report this result transparently as a directional trend rather than a definitive margin.
 
 ---
 
 ## 2. Summary Benchmark Results
 
-### Table 1: Model Accuracy and Outage Reduction
-*(Generated from `Revision_Accuracy_and_Outage_Summary.csv`)*
+### Table 1: Model Accuracy and Outage Reduction (Neural Network vs. XGBoost Baseline)
+*(Generated from `Revision_Accuracy_and_Outage_Summary.csv`. For complete multi-model comparisons including Random Forest and KNN, see `saved_folder/Advanced_ML_Viz_Seeded_1789723135/Split_Mode_Sensitivity_Extended.csv`)*
 
 | Scenario | Test Frames | XGBoost Top-1 | Neural Network Top-1 | Margin | 3 dB Outage (XGB vs NN) | Outage Reduction Ratio | Two-Sided Fisher $p$ | Paired McNemar $p$ ($b, c$) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -39,7 +39,7 @@ Uncertainty is quantified along two independent dimensions:
 
 > **Note on Scenario 2 Seed Reporting & Training Regimes**: The 3-checkpoint benchmark mean is 35.18% (+10.31 pp margin, trained for 60 epochs with cosine annealing), and the expanded 10-seed distribution mean is 35.23% ($\text{SD} = 1.90\text{ pp}$, $\text{SE} = \pm 0.60\text{ pp}$, +10.36 pp margin, trained for 50 epochs), demonstrating that the NN performance advantage remains remarkably consistent across independent weight initializations and training configurations (50 vs. 60 epochs). Per-seed 3 dB outage counts are: NN = [20, 22, 18] (mean 20.00) vs. XGB = [60, 60, 60] (mean 60.00). The McNemar test evaluates matched pairs strictly on the $N_{\text{test}} = 595$ physical test frames (zero pseudoreplication). As primary paired analysis on the 3-checkpoint mean per-frame loss: $b = 53, c = 3 \implies p = 8.14 \times 10^{-13}$. As sensitivity analysis across independent training initializations on those same 595 frames: Seed 42 ($b=49, c=9, p = 8.96 \times 10^{-8}$), Seed 100 ($b=46, c=8, p = 1.38 \times 10^{-7}$), and Seed 2024 ($b=51, c=9, p = 3.09 \times 10^{-8}$) all yield $p < 1.4 \times 10^{-7}$. In Scenario 1 at 6 dB threshold, zero NN outage events were recorded (`n/a (0 events)`). Data partitioning enforces strict out-of-sample holdout test isolation (the 20% test trajectory was never seen during feature scaling or model training).
 
-### Table 2: Circular Moving Block Bootstrap 95% Confidence Intervals
+### Table 2: Circular Moving Block Bootstrap 95% Confidence Intervals (NN vs. XGBoost Contrast)
 *(Generated from `Revision_Bootstrap_CI_Summary.csv` — Paired Within-Seed Contrast)*
 
 | Scenario | Block Length ($L$) | Mean Margin | 95% Confidence Interval | Standard Error | Excludes Zero? |

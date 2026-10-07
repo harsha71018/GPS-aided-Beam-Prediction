@@ -345,22 +345,22 @@ The competitive performance of classical models under random 80/20 splitting hig
 
 | Scenario | NN Top-1 | KNN Top-1 | RF Top-1 | XGB Top-1 | NN Margin vs Best Classical | Lowest Power Loss |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Scenario 1 (Day-A)** | **48.66%** | 47.84% | **48.73%** | 48.45% | ~0.0 pp (Statistical Tie) | **NN (0.27 dB)** |
+| **Scenario 1 (Day-A)** | 48.66% | 47.84% | **48.73%** | 48.45% | Within 0.8 pp | **NN (0.27 dB)** |
 | **Scenario 2 (Night)** | **35.18%** | 28.40% | 28.80% | 24.87% | **+6.38 pp** (*+10.31 pp vs XGB*) | **NN (0.59 dB)** |
 | **Scenario 3 (Day-B)** | **30.76%** | 22.48% | 22.15% | 23.83% | **+6.93 pp** (*+8.61 pp vs RF*) | **NN (1.15 dB)** |
 
-Under trajectory extrapolation, the Deep Neural Network outperforms the best classical model by **+6.4 to +6.9 percentage points** in Scenarios 2 and 3, ties in Scenario 1, and achieves the lowest beamforming power loss across all 3 scenarios.
+Under trajectory extrapolation, the Deep Neural Network outperforms the best classical model by **+6.4 to +6.9 percentage points** in Scenarios 2 and 3, performs within 0.8 pp in Scenario 1, and achieves the lowest beamforming power loss across all 3 scenarios.
 
-#### Trajectory Partition Sensitivity Analysis
+#### Trajectory Partition Sensitivity Analysis (vs. XGBoost)
 
-An empirical audit tested whether the chronological 80/20 sample index cut ($N_{\text{test}} = 595$, ending mid-drive at sample index 2,379 in vehicle sequence 27) vs. a strict vehicle sequence boundary ($N_{\text{test}} = 592$, starting at sample index 2,382 at sequence 28) impacts the conclusions:
+An empirical audit tested whether the chronological 80/20 sample index cut ($N_{\text{test}} = 595$, ending mid-drive at sample index 2,379 in vehicle sequence 27) vs. a strict vehicle sequence boundary ($N_{\text{test}} = 592$, starting at sample index 2,382 at sequence 28) impacts the NN advantage over XGBoost:
 
-| Partitioning Strategy | Test Samples ($N_{\text{test}}$) | XGBoost Top-1 | NN Top-1 | NN Margin |
+| Partitioning Strategy | Test Samples ($N_{\text{test}}$) | XGBoost Top-1 | NN Top-1 | NN Margin (vs. XGB) |
 |---|:---:|:---:|:---:|:---:|
 | **80/20 Sample Index Split** | 595 | 24.87% | 35.13% | **+10.25 pp** |
 | **Strict Sequence Boundary Split** | 592 | 26.52% | 35.14% | **+8.61 pp** |
 
-**Verdict**: The neural network's accuracy is nearly identical (35.13% vs 35.14%), preserving a statistically significant advantage (+8.61 pp to +10.25 pp) on completely unseen vehicle drives.
+**Verdict**: The neural network's accuracy is nearly identical (35.13% vs 35.14%), preserving a +8.61 pp to +10.25 pp margin over XGBoost on unseen vehicle drives.
 
 #### Power Loss (dB) — Averaged across 3 scenarios
 
@@ -425,8 +425,8 @@ The [`Revision_Evaluation/`](Revision_Evaluation/) module provides an official, 
 ### Key Research Findings
 1. **The Trajectory Extrapolation "Winner-Flip"**:
    - Under standard random splits, tree ensembles and neural networks effectively tie (~43%).
-   - Under chronological vehicular trajectory extrapolation (training on the first 80% of a drive and evaluating on the future 20%), tree models suffer catastrophic collapse (XGBoost drops to **24.87%**).
-   - In contrast, deep neural networks preserve continuous spatial representations, retaining **35.23%** (a robust **+10.31 pp to +10.36 pp** advantage in Scenario 2 - Night; 10-seed distribution mean: **35.23%**, 3-checkpoint mean: **35.18%**).
+   - Under chronological vehicular trajectory extrapolation (training on the first 80% of a drive and evaluating on the future 20%), tree models experience significant performance drops (XGBoost drops to **24.87%**, Random Forest to **28.80%**).
+   - In contrast, deep neural networks retain **35.18%** (a **+6.38 pp** advantage over the strongest classical baseline Random Forest, and **+10.31 pp** over XGBoost in Scenario 2 - Night; 10-seed NN mean: **35.23%**).
 2. **Circular Moving Block Bootstrap (C-MBB)**:
    - Formally models temporal autocorrelation using circular block resampling (Politis & Romano 1992).
    - Scenario 2 95% Confidence Interval is **[+2.35%, +20.17%]**, strictly excluding zero across all block lengths ($L=25, 50, 100$).
