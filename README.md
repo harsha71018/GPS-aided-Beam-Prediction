@@ -339,31 +339,28 @@ The Neural Network was completely unaffected by this bug as it directly outputs 
 
 The competitive performance of classical models under random 80/20 splitting highlights an essential scientific distinction:
 1. **Spatial Interpolation (Random Split — Tiers 1 & 2)**:
-   In random splitting, consecutive frames from the same vehicle drive are partitioned across both training and test sets. Because GPS coordinates vary continuously, test samples lie physically adjacent to training points. Local distance-weighted algorithms (KNN) and axis-aligned partition trees (RF, XGBoost) perform effective local coordinate interpolation (~41%).
+   In random splitting, consecutive frames from the same vehicle drive are partitioned across both training and test sets. Because GPS coordinates vary continuously, test samples lie physically adjacent to training points. Local distance-weighted algorithms (KNN) and decision tree ensembles (RF, XGBoost) perform effective local coordinate interpolation (~41%).
 2. **Trajectory Extrapolation (Chronological Split — Tier 4)**:
-   In practical 6G deployments, base stations must predict optimal beams for vehicles traveling along **unseen future trajectory segments**. Under chronological extrapolation (Tier 4):
-   - **XGBoost drops to 24.87%** (tree partitions overfit to observed coordinates and cannot extrapolate continuous manifolds).
-   - **Deep Neural Network maintains 35.18%** (+10.31 pp advantage, paired McNemar $p = 8.14 \times 10^{-13}$).
-   - **Outage Reduction**: The NN reduces 3 dB link outages from 12.61% down to 3.36% (a 3.75x reliability gain).
+   In real-world deployment, base stations must predict optimal beams for vehicles traveling along **unseen future trajectory passes**. Under chronological trajectory extrapolation across all models (`Split_Mode_Sensitivity_Extended.csv`):
+
+| Scenario | NN Top-1 | KNN Top-1 | RF Top-1 | XGB Top-1 | NN Margin vs Best Classical | Lowest Power Loss |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Scenario 1 (Day-A)** | **48.66%** | 47.84% | **48.73%** | 48.45% | ~0.0 pp (Statistical Tie) | **NN (0.27 dB)** |
+| **Scenario 2 (Night)** | **35.18%** | 28.40% | 28.80% | 24.87% | **+6.38 pp** (*+10.31 pp vs XGB*) | **NN (0.59 dB)** |
+| **Scenario 3 (Day-B)** | **30.76%** | 22.48% | 22.15% | 23.83% | **+6.93 pp** (*+8.61 pp vs RF*) | **NN (1.15 dB)** |
+
+Under trajectory extrapolation, the Deep Neural Network outperforms the best classical model by **+6.4 to +6.9 percentage points** in Scenarios 2 and 3, ties in Scenario 1, and achieves the lowest beamforming power loss across all 3 scenarios.
 
 #### Trajectory Partition Sensitivity Analysis
 
-An empirical audit tested whether the chronological 80/20 sample cut ($N_{\text{test}} = 595$, ending mid-drive at sample index 2,379 in vehicle sequence 27) vs. a strict vehicle sequence boundary ($N_{\text{test}} = 592$, starting at sample index 2,382 at sequence 28) impacts the conclusions:
+An empirical audit tested whether the chronological 80/20 sample index cut ($N_{\text{test}} = 595$, ending mid-drive at sample index 2,379 in vehicle sequence 27) vs. a strict vehicle sequence boundary ($N_{\text{test}} = 592$, starting at sample index 2,382 at sequence 28) impacts the conclusions:
 
 | Partitioning Strategy | Test Samples ($N_{\text{test}}$) | XGBoost Top-1 | NN Top-1 | NN Margin |
 |---|:---:|:---:|:---:|:---:|
-| **Sample Cut (80/20 Index — Submitted Paper)** | 595 | 24.87% | 35.13% | **+10.25 pp** |
-| **Strict Sequence Boundary Cut** | 592 | 26.52% | 35.14% | **+8.61 pp** |
+| **80/20 Sample Index Split** | 595 | 24.87% | 35.13% | **+10.25 pp** |
+| **Strict Sequence Boundary Split** | 592 | 26.52% | 35.14% | **+8.61 pp** |
 
-**Verdict**: The neural network's accuracy is nearly identical (35.13% vs 35.14%), preserving a statistically overwhelming advantage (+8.61 pp to +10.25 pp) on completely unseen vehicle drives.
-
-#### 6G URLLC Inference Latency Constraint
-
-Even under spatial interpolation, real-time wireless systems impose strict latency deadlines:
-- **Deep Neural Network**: $\approx \mathbf{20\ \mu\text{s}}$ (parallel GPU/edge tensor execution).
-- **Random Forest / XGBoost**: $\approx \mathbf{1.0 - 1.5\ \text{ms}}$ (sequential evaluation across 50–100 decision trees).
-
-Sub-terahertz 6G channels exhibit channel coherence times below $1\ \text{ms}$. Classical tree ensembles exceed this coherence budget, making the Deep Neural Network the only architecture compliant with ultra-reliable low-latency communication (URLLC) requirements.
+**Verdict**: The neural network's accuracy is nearly identical (35.13% vs 35.14%), preserving a statistically significant advantage (+8.61 pp to +10.25 pp) on completely unseen vehicle drives.
 
 #### Power Loss (dB) — Averaged across 3 scenarios
 
