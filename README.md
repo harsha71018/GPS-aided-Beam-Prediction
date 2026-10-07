@@ -100,22 +100,54 @@ This project uses the **DeepSense 6G** position-aided beam prediction dataset:
 | **Scenario 3** | V2I Day - Location B | 1,487 | 1,189 | **298** ($0.336\%$ / sample) |
 | **Total Benchmark** | Multi-environment V2I testbed | **6,883** | **5,505** | **1,378** |
 
-### Data Setup
+### Data Setup & Verification
 
-1. Download the position-aided subset from [DeepSense 6G](https://deepsense6g.net).
-2. Place the `.npy` files in a folder called `Gathered_data_DEV/` in the project root:
+The evaluation pipeline expects pre-extracted NumPy arrays located in `Gathered_data_DEV/` in the repository root. You can acquire these files via either of the following two methods:
 
+#### Method 1: Pre-Extracted Package from Morais et al. (Recommended — ~30 Seconds)
+The pre-processed GPS position vectors and 60 GHz beam power matrices were packaged and validated by **João Morais et al.** in their companion codebase:
+- **Repository**: [https://github.com/jmoraispk/Position-Beam-Prediction](https://github.com/jmoraispk/Position-Beam-Prediction)
+
+You can clone or download the `Gathered_data_DEV` folder directly from their repository into this project root:
+```bash
+# Sparse-checkout the data directory from Morais et al.'s repository
+git clone --depth 1 --filter=blob:none --sparse https://github.com/jmoraispk/Position-Beam-Prediction.git morais_repo
+cd morais_repo
+git sparse-checkout set Gathered_data_DEV
+cp -r Gathered_data_DEV ../GPS-aided-Beam-Prediction/
+cd .. && rm -rf morais_repo
 ```
-Gathered_data_DEV/
-├── scenario1_unit1_loc.npy
-├── scenario1_unit1_pwr.npy
-├── scenario1_unit2_loc_cal.npy
-├── scenario2_unit1_loc.npy
-├── scenario2_unit1_pwr.npy
-├── scenario2_unit2_loc_cal.npy
-├── scenario3_unit1_loc.npy
-├── scenario3_unit1_pwr.npy
-└── scenario3_unit2_loc.npy
+*(Alternatively, download the ZIP archive from GitHub and extract the `Gathered_data_DEV` folder directly into the project root).*
+
+#### Method 2: Raw DeepSense 6G Portal & Research Mirrors
+If you wish to inspect or reconstruct the arrays from the official upstream research sources:
+- **Primary Beam Prediction Portal**: [DeepSense 6G Position-Aided Beam Prediction](https://www.deepsense6g.net/position-aided-beam-prediction/)
+- **Scenario 1 (V2I Day - Location A, 2,422 samples)**: [DeepSense Scenario 1](https://www.deepsense6g.net/scenarios/scenario-1/)
+- **Scenario 2 (V2I Night, 2,974 samples)**: [DeepSense Scenario 2](https://www.deepsense6g.net/scenarios/scenario-2/)
+- **Scenario 3 (V2I Day - Location B, 1,487 samples)**: [DeepSense Scenario 3](https://www.deepsense6g.net/scenarios/scenario-3/)
+- **DeepSense 6G Dataset Portal**: [https://www.deepsense6g.net](https://www.deepsense6g.net)
+- **ASU Wireless Intelligence Lab**: [https://wi-lab.net](https://wi-lab.net)
+
+
+#### Dataset Verification Checklist
+The `Gathered_data_DEV/` directory should contain the following NumPy arrays (all 9 core feature and power arrays plus sequence indices):
+
+| Filename | Samples ($N$) | Array Shape | Data Type | Physical Description |
+|:---|:---:|:---:|:---:|:---|
+| `scenario1_unit1_loc_1-2422.npy` | 2,422 | `(2422, 2)` | `float64` | Base Station (BS) receiver latitude & longitude |
+| `scenario1_unit2_loc_1-2422.npy` | 2,422 | `(2422, 2)` | `float64` | Vehicle transmitter (UE) latitude & longitude |
+| `scenario1_unit1_pwr_60ghz_1-2422.npy` | 2,422 | `(2422, 64)` | `float64` | 60 GHz 64-beam normalized power matrix |
+| `scenario2_unit1_loc_1-2974.npy` | 2,974 | `(2974, 2)` | `float64` | Base Station (BS) receiver latitude & longitude |
+| `scenario2_unit2_loc_1-2974.npy` | 2,974 | `(2974, 2)` | `float64` | Vehicle transmitter (UE) latitude & longitude |
+| `scenario2_unit1_pwr_60ghz_1-2974.npy` | 2,974 | `(2974, 64)` | `float64` | 60 GHz 64-beam normalized power matrix |
+| `scenario3_unit1_loc_1-1487.npy` | 1,487 | `(1487, 2)` | `float64` | Base Station (BS) receiver latitude & longitude |
+| `scenario3_unit2_loc_1-1487.npy` | 1,487 | `(1487, 2)` | `float64` | Vehicle transmitter (UE) latitude & longitude |
+| `scenario3_unit2_loc_cal_1-1487.npy` | 1,487 | `(1487, 2)` | `float64` | Calibrated vehicle transmitter coordinates |
+| `scenario3_unit1_pwr_60ghz_1-1487.npy` | 1,487 | `(1487, 64)` | `float64` | 60 GHz 64-beam normalized power matrix |
+
+To quickly verify array integrity and shapes from your terminal:
+```bash
+python -c "import os, numpy as np; [print(f'{f:38s} {str(np.load(os.path.join(\"Gathered_data_DEV\", f)).shape):15s}') for f in sorted(os.listdir('Gathered_data_DEV')) if f.endswith('.npy')]"
 ```
 
 *(Note: `Gathered_data_DEV/` is included in `.gitignore` to prevent committing large binary data).*
@@ -128,19 +160,29 @@ Gathered_data_DEV/
 ├── Loader.py                        # Tier 1: Original submitted baseline pipeline
 ├── train_test_func.py               # Tier 1: Original neural network & baseline utilities
 ├── check_env_file.py                # Tier 1: Environment & CUDA verification script
-├── requirements.txt                 # Project Python dependencies
+├── requirements.txt                 # Project Python dependencies (pinned torch>=2.1.0)
 ├── Gathered_data_DEV/               # Dataset directory (.npy files — download separately)
-├── Further tuning/                  # Tier 2: Bug-fixed classical ML framework
-│   ├── tuning_loader.py             # Refined main pipeline with clf.classes_ fix
-│   ├── tuning_train_test_func.py
-│   ├── tuning_check_env.py
-│   └── Final_ML_Viz_1779380116/     # Post-fix benchmark outputs (13 plots + CSV)
+├── tests/                           # Pure-function unit tests (<0.1s runtime, zero dataset dependency)
+│   └── test_revision_helpers.py     # Kinematics, C-MBB, McNemar & checkpoint loader tests
+├── Revision_Evaluation/             # Tier 4: Peer-review revision evaluation framework (Latest Benchmark)
+│   ├── run_revision_evaluation.py   # Benchmark runner (extrapolation, C-MBB, outages, CLI args)
+│   ├── revision_train_test_func.py  # Kinematic toolbox, C-MBB generator, safe checkpoint loader
+│   ├── Revision_Accuracy_and_Outage_Summary.csv # Benchmark metrics (3 scenarios)
+│   ├── Revision_Bootstrap_CI_Summary.csv        # Circular moving block bootstrap CIs
+│   ├── Revision_10_Seed_Distribution.csv       # Scenario 2 empirical distribution (N=10)
+│   └── README.md                    # Detailed revision methodology & statistical documentation
 ├── Advanced_Pipeline/               # Tier 3: Advanced geometric & kinematic framework (v2)
 │   ├── advanced_loader.py           # Upgraded execution pipeline (14 plots + 2 CSVs)
 │   ├── advanced_train_test_func.py  # UTM kinematics, zero-leakage scaler, AdamW
 │   ├── advanced_check_env.py        # Environment & GPU verification script
 │   └── Advanced_ML_Viz_1789648029/  # Complete verified results package (14 plots + CSVs)
-└── saved_folder/                    # Tier 1 output directory
+├── Further tuning/                  # Tier 2: Bug-fixed classical ML framework
+│   ├── tuning_loader.py             # Refined main pipeline with clf.classes_ fix
+│   ├── tuning_train_test_func.py
+│   ├── tuning_check_env.py
+│   └── Final_ML_Viz_1779380116/     # Post-fix benchmark outputs (13 plots + CSV)
+└── saved_folder/                    # Pretrained model checkpoints and historical outputs
+    ├── Advanced_ML_Viz_Seeded_1789723135/ # Tier 4 multi-seed checkpoints (seeds 42, 100, 2024)
     └── Final_ML_Viz_1776919650/     # Original submitted baseline outputs
 ```
 
@@ -166,7 +208,21 @@ pip install -r requirements.txt
 
 ## Usage (Choose Your Tier)
 
-### 🚀 Recommended: Run Advanced Pipeline (Tier 3)
+### 🏆 Recommended: Run Revision Evaluation Benchmark (Tier 4)
+The official revision evaluation harness evaluates chronological trajectory extrapolation, Circular Moving Block Bootstrap 95% CIs, exact paired McNemar tests, and 3 dB / 6 dB link outages:
+```bash
+# Execute full revision benchmark across Scenarios 1, 2, and 3 (~30 seconds)
+python Revision_Evaluation/run_revision_evaluation.py
+
+# CLI configuration options (custom checkpoint directory, data path, or output directory):
+python Revision_Evaluation/run_revision_evaluation.py \
+    --checkpoint-dir saved_folder/Advanced_ML_Viz_Seeded_1789723135 \
+    --data-dir Gathered_data_DEV \
+    --output-dir Revision_Evaluation
+```
+*(Environment variables `GP_CHECKPOINT_DIR`, `GP_DATA_DIR`, and `GP_OUTPUT_DIR` are also supported as automatic fallbacks).*
+
+### 🚀 Run Advanced Pipeline (Tier 3)
 ```bash
 cd Advanced_Pipeline
 
@@ -189,6 +245,25 @@ python tuning_loader.py
 python check_env_file.py
 python Loader.py
 ```
+
+### 🧪 Run Unit Test Suite
+Lightweight unit tests test UTM kinematics, circular moving block bootstrap index wrapping, zero-leakage scaling, McNemar exact binomial calculations, and safe PyTorch model loading:
+```bash
+python -m unittest discover tests
+```
+*Runtime: < 0.1 seconds, zero dataset dependency.*
+
+---
+
+### Architectural Note on Tier Self-Containment
+
+Rather than refactoring historical tier scripts into a single monolithic utility module, Tiers 1, 2, 3, and 4 are deliberately maintained as self-contained reference implementations:
+- **Tier 1 (`Loader.py`, `train_test_func.py`)**: Preserves the exact submitted manuscript baseline for Wiley IJCS peer reviewers.
+- **Tier 2 (`Further tuning/`)**: Isolates the classical ML mapping bug diagnosis and verification (`clf.classes_`).
+- **Tier 3 (`Advanced_Pipeline/`)**: Encapsulates the metric UTM feature engineering and continuous noise sweeps.
+- **Tier 4 (`Revision_Evaluation/`)**: Implements the hardened chronological extrapolation protocol with paired C-MBB confidence intervals, exact McNemar tests, and configurable checkpoint loading.
+
+This design guarantees an immutable, independent audit trail for each stage of the research without cross-tier regression risks. Shared algorithmic components are independently verified via the lightweight test suite in `tests/`.
 
 ---
 

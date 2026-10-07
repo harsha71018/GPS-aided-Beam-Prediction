@@ -224,3 +224,19 @@ def train_net(x_train, y_train, x_val, y_val, run_folder, num_epochs=50, model=N
 
     return best_model_path
 
+
+# ==============================================================================
+# 6. UNIVERSAL BACKWARD-COMPATIBLE MODEL CHECKPOINT LOADER
+# ==============================================================================
+def load_torch_checkpoint(path, map_location):
+    """
+    Loads a PyTorch checkpoint with backward and forward compatibility across PyTorch versions.
+    Supplies weights_only=True if supported by the PyTorch runtime to avoid CVE-2024-33828 / FutureWarning.
+    """
+    import inspect
+    load_kwargs = {"map_location": map_location}
+    if "weights_only" in inspect.signature(torch.load).parameters:
+        load_kwargs["weights_only"] = True
+    return torch.load(path, **load_kwargs)
+
+
