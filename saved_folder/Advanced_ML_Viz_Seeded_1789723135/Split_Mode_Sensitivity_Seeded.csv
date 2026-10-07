@@ -1,0 +1,16 @@
+Scenario,Algorithm,mean,std
+Scenario 1 (V2I - Day - Location A),KNN,0.89,0.83
+Scenario 1 (V2I - Day - Location A),NB,2.06,1.97
+Scenario 1 (V2I - Day - Location A),NN,1.92,0.48
+Scenario 1 (V2I - Day - Location A),RF,1.37,2.07
+Scenario 1 (V2I - Day - Location A),XGB,2.82,1.8
+Scenario 2 (V2I - Night),KNN,17.03,2.67
+Scenario 2 (V2I - Night),NB,-2.8,0.26
+Scenario 2 (V2I - Night),NN,11.2,5.07
+Scenario 2 (V2I - Night),RF,17.37,1.72
+Scenario 2 (V2I - Night),XGB,21.9,1.95
+Scenario 3 (V2I - Day - Location B),KNN,2.46,1.72
+Scenario 3 (V2I - Day - Location B),NB,-7.49,1.4
+Scenario 3 (V2I - Day - Location B),NN,-1.12,1.66
+Scenario 3 (V2I - Day - Location B),RF,2.8,2.36
+Scenario 3 (V2I - Day - Location B),XGB,1.79,3.12

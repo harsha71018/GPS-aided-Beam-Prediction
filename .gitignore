@@ -54,7 +54,9 @@ BeamPredictionPaper*
 # Experimental seeded runs and uncommitted research
 advanced_loader_seeded.py
 Advanced_Pipeline/advanced_loader_seeded.py
-saved_folder/Advanced_ML_Viz_Seeded_*/
+saved_folder/Advanced_ML_Viz_Seeded_*
+!saved_folder/Advanced_ML_Viz_Seeded_1789723135
+!saved_folder/Advanced_ML_Viz_Seeded_1789723135/**
 saved_folder/Advanced_ML_Viz_1789712609/
 saved_folder/Revision_Evaluation_Results/
 run_latest_revision_results.py

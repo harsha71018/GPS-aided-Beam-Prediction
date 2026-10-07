@@ -1,0 +1,19 @@
+,,PowerLoss_dB,PowerLoss_dB,PowerLoss_dB,PowerLoss_dB,RobustnessDrop,RobustnessDrop,RobustnessDrop,RobustnessDrop,Top1_acc,Top1_acc,Top1_acc,Top1_acc
+SplitMode,,chronological,chronological,random,random,chronological,chronological,random,random,chronological,chronological,random,random
+,,mean,std,mean,std,mean,std,mean,std,mean,std,mean,std
+Scenario,Algorithm,,,,,,,,,,,,
+Scenario 1 (V2I - Day - Location A),KNN,0.33,0.0,0.27,0.02,13.0,0.36,12.71,1.83,47.84,0.0,48.73,0.83
+Scenario 1 (V2I - Day - Location A),NB,0.37,0.0,0.38,0.02,8.58,0.88,9.91,0.87,38.35,0.0,40.41,1.97
+Scenario 1 (V2I - Day - Location A),NN,0.27,0.0,0.26,0.01,11.48,0.63,12.05,2.07,48.66,0.55,50.58,0.93
+Scenario 1 (V2I - Day - Location A),RF,0.33,0.0,0.24,0.03,14.98,0.61,15.15,1.19,48.73,0.31,50.1,2.38
+Scenario 1 (V2I - Day - Location A),XGB,0.33,0.0,0.23,0.0,15.07,0.79,15.97,0.28,48.45,0.0,51.27,1.8
+Scenario 2 (V2I - Night),KNN,0.79,0.0,0.38,0.03,2.57,0.74,11.81,2.27,28.4,0.0,45.43,2.67
+Scenario 2 (V2I - Night),NB,1.38,0.0,1.45,0.04,2.24,0.33,0.99,0.71,26.89,0.0,24.09,0.26
+Scenario 2 (V2I - Night),NN,0.59,0.04,0.41,0.03,3.92,1.74,7.79,1.33,35.18,3.95,46.39,1.18
+Scenario 2 (V2I - Night),RF,0.86,0.01,0.37,0.02,4.45,0.78,12.95,1.46,28.8,0.1,46.16,1.75
+Scenario 2 (V2I - Night),XGB,0.97,0.0,0.39,0.05,0.67,0.7,12.86,1.87,24.87,0.0,46.78,1.95
+Scenario 3 (V2I - Day - Location B),KNN,1.5,0.0,1.52,0.1,0.0,0.0,2.14,0.39,22.48,0.0,24.94,1.72
+Scenario 3 (V2I - Day - Location B),NB,2.11,0.0,2.59,0.21,1.03,0.36,0.07,0.07,15.1,0.0,7.61,1.4
+Scenario 3 (V2I - Day - Location B),NN,1.15,0.06,1.37,0.2,0.76,0.39,2.36,0.91,30.76,1.69,29.64,2.61
+Scenario 3 (V2I - Day - Location B),RF,1.51,0.03,1.56,0.06,1.5,0.82,2.89,0.62,22.15,1.21,24.94,1.66
+Scenario 3 (V2I - Day - Location B),XGB,1.35,0.0,1.46,0.1,1.6,0.08,2.74,1.19,23.83,0.0,25.62,3.12

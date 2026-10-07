@@ -24,7 +24,6 @@ if REVISION_DIR not in sys.path:
     sys.path.insert(0, REVISION_DIR)
 
 import revision_train_test_func as func
-from run_revision_evaluation import load_torch_checkpoint
 
 
 class TestRevisionHelpers(unittest.TestCase):
@@ -128,7 +127,6 @@ class TestRevisionHelpers(unittest.TestCase):
         self.assertEqual(noisy_pert.shape, (2, 2))
         self.assertTrue(np.all(np.abs(noisy_pert - pos_veh) > 0.0))
 
-
     def test_advanced_nn_architecture_forward(self):
         """Verify Advanced_NN_FCN forward pass produces expected logit dimensions."""
         model = func.Advanced_NN_FCN(
@@ -149,15 +147,26 @@ class TestRevisionHelpers(unittest.TestCase):
     def test_mcnemar_exact_binomial_logic(self):
         """Verify paired McNemar exact binomial test calculation on matched discordant frames."""
         # Scenario 2 at 3 dB: b = 53 (XGB outage only), c = 3 (NN outage only)
-        b_disc = 53
-        c_disc = 3
-        res = stats.binomtest(b_disc, b_disc + c_disc, 0.5)
+        n_frames = 595
+        nn_loss = np.zeros(n_frames)
+        xgb_loss = np.zeros(n_frames)
 
-        # Must reject null with extreme significance p < 1e-10 (matching 8.1371e-13)
-        self.assertLess(res.pvalue, 1e-10)
-        self.assertAlmostEqual(res.pvalue, 8.1371e-13, delta=1e-14)
+        # 53 frames: XGB in outage (>3.0 dB), NN not in outage (<=3.0 dB)
+        xgb_loss[:53] = 4.5
+        nn_loss[:53] = 1.0
 
-        # Symmetric case: b = 10, c = 10 -> p = 1.0 (no difference)
+        # 3 frames: NN in outage (>3.0 dB), XGB not in outage (<=3.0 dB)
+        nn_loss[53:56] = 5.0
+        xgb_loss[53:56] = 1.5
+
+        out = func.compute_outage_and_mcnemar(nn_loss, xgb_loss, thresh=3.0)
+
+        self.assertEqual(out["b_disc"], 53)
+        self.assertEqual(out["c_disc"], 3)
+        self.assertLess(out["p_mcnemar"], 1e-10)
+        self.assertAlmostEqual(out["p_mcnemar"], 8.1371e-13, delta=1e-14)
+
+        # Symmetric case: b = 10, c = 10 -> p = 1.0
         res_sym = stats.binomtest(10, 20, 0.5)
         self.assertEqual(res_sym.pvalue, 1.0)
 
@@ -171,7 +180,7 @@ class TestRevisionHelpers(unittest.TestCase):
 
         try:
             torch.save(state_dict, tmp_path)
-            loaded_sd = load_torch_checkpoint(tmp_path, map_location="cpu")
+            loaded_sd = func.load_torch_checkpoint(tmp_path, map_location="cpu")
 
             self.assertEqual(set(loaded_sd.keys()), set(state_dict.keys()))
             for k in state_dict:
@@ -180,6 +189,14 @@ class TestRevisionHelpers(unittest.TestCase):
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
 
+    def test_missing_checkpoint_raises_filenotfound(self):
+        """Verify that load_nn_model_checkpoint raises FileNotFoundError when checkpoints are missing."""
+        missing_path = os.path.join(tempfile.gettempdir(), "nonexistent_checkpoint_dir", "best_model.pth")
+        with self.assertRaises(FileNotFoundError):
+            func.load_nn_model_checkpoint(missing_path, device="cpu")
+
 
 if __name__ == "__main__":
     unittest.main()
+
+

@@ -46,7 +46,7 @@ from revision_train_test_func import load_torch_checkpoint
 # ------------------------------------------------------------------------------
 # 10-Seed Empirical Distribution Generator for Scenario 2
 # ------------------------------------------------------------------------------
-def ensure_10_seed_distribution(data_dir, output_dir, device, force_retrain=False):
+def ensure_10_seed_distribution(data_dir, output_dir, device, force_retrain=False, baseline_xgb=24.87):
     """
     Ensures Revision_10_Seed_Distribution.csv exists.
     If absent or if force_retrain is True, automatically trains the NN
@@ -54,6 +54,7 @@ def ensure_10_seed_distribution(data_dir, output_dir, device, force_retrain=Fals
     """
     dist_csv = os.path.join(output_dir, "Revision_10_Seed_Distribution.csv")
     if os.path.exists(dist_csv) and not force_retrain:
+        print(f"[CACHED: Using existing {os.path.basename(dist_csv)}]")
         return dist_csv
 
     print("\n>>> Generating Revision_10_Seed_Distribution.csv for Scenario 2 (Night)... <<<", flush=True)
@@ -112,7 +113,6 @@ def ensure_10_seed_distribution(data_dir, output_dir, device, force_retrain=Fals
     mean_acc = np.mean(accs)
     std_acc = np.std(accs, ddof=1)
     se_acc = std_acc / np.sqrt(len(accs))
-    baseline_xgb = 24.87
     margin_10 = mean_acc - baseline_xgb
     ci_t = stats.t.interval(0.95, df=len(accs)-1, loc=margin_10, scale=se_acc)
 
@@ -235,14 +235,8 @@ def run_benchmark(data_dir=None, saved_dir=None, output_dir=None, retrain_10_see
         nn_preds = []
         for s in seeds:
             ckpt_path = os.path.join(saved_dir, f"scenario_{scen_idx}", f"NN_chronological_seed{s}", "best_model.pth")
-            model = func.Advanced_NN_FCN(num_features=7, num_output=64, nodes_per_layer=256, n_layers=5, dropout_rate=0.2)
-            if os.path.exists(ckpt_path):
-                model.load_state_dict(load_torch_checkpoint(ckpt_path, map_location=device))
-                model.to(device)
-                p_nn = func.test_net(x_te, model, top_k=1)[:, 0]
-            else:
-                print(f"Warning: Checkpoint not found at {ckpt_path}, skipping seed {s}")
-                p_nn = pred_x
+            model = func.load_nn_model_checkpoint(ckpt_path, device=device)
+            p_nn = func.test_net(x_te, model, top_k=1)[:, 0]
 
             nn_preds.append(p_nn)
             acc = np.mean(p_nn == y_te) * 100.0
@@ -267,7 +261,7 @@ def run_benchmark(data_dir=None, saved_dir=None, output_dir=None, retrain_10_see
 
         # For Scenario 2, ensure 10-seed distribution is present and incorporate it
         if scen_idx == 2:
-            dist_csv = ensure_10_seed_distribution(data_dir, output_dir, device, force_retrain=retrain_10_seeds)
+            dist_csv = ensure_10_seed_distribution(data_dir, output_dir, device, force_retrain=retrain_10_seeds, baseline_xgb=mean_xgb_acc)
             if os.path.exists(dist_csv):
                 df_dist = pd.read_csv(dist_csv)
                 nn_10_raw = df_dist[df_dist["Model"] == "Deep Neural Network"]["Top1_Accuracy_Pct"].values[:10]
@@ -447,7 +441,7 @@ def main():
         action="store_true",
         help="Force re-training the 10-seed distribution on Scenario 2"
     )
-    args, _ = parser.parse_known_args()
+    args = parser.parse_args()
 
     run_benchmark(
         data_dir=os.path.abspath(args.data_dir),

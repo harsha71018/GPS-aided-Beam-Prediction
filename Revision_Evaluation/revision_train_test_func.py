@@ -240,3 +240,80 @@ def load_torch_checkpoint(path, map_location):
     return torch.load(path, **load_kwargs)
 
 
+def load_nn_model_checkpoint(ckpt_path, device, num_features=7, num_output=64, nodes_per_layer=256, n_layers=5, dropout_rate=0.2):
+    """
+    Instantiates and loads an Advanced_NN_FCN model from a checkpoint path.
+    Raises FileNotFoundError if the checkpoint does not exist.
+    """
+    if not os.path.exists(ckpt_path):
+        raise FileNotFoundError(
+            f"Pretrained model checkpoint not found at: {ckpt_path}\n"
+            f"Please verify that saved_folder/Advanced_ML_Viz_Seeded_1789723135/ is tracked and available, "
+            f"or specify a valid directory via --checkpoint-dir."
+        )
+    model = Advanced_NN_FCN(
+        num_features=num_features,
+        num_output=num_output,
+        nodes_per_layer=nodes_per_layer,
+        n_layers=n_layers,
+        dropout_rate=dropout_rate
+    )
+    model.load_state_dict(load_torch_checkpoint(ckpt_path, map_location=device))
+    model.to(device)
+    model.eval()
+    return model
+
+
+# ==============================================================================
+# 7. LINK OUTAGE PROBABILITY & PAIRED MCNEMAR TEST EVALUATOR
+# ==============================================================================
+def compute_outage_and_mcnemar(nn_loss, xgb_loss, thresh=3.0):
+    """
+    Computes paired outage counts, rates, and exact two-sided McNemar binomial test
+    p-value across matched test frames (zero pseudoreplication).
+
+    Parameters:
+        nn_loss (np.ndarray): Per-frame beamforming power loss for NN (shape: N_test)
+        xgb_loss (np.ndarray): Per-frame beamforming power loss for XGBoost (shape: N_test)
+        thresh (float): Outage threshold in dB (e.g., 3.0 dB or 6.0 dB)
+
+    Returns:
+        dict: Outage statistics including nn_cnt, xgb_cnt, nn_pct, xgb_pct, b_disc, c_disc, p_mcnemar
+    """
+    import scipy.stats as stats
+    nn_loss = np.asarray(nn_loss)
+    xgb_loss = np.asarray(xgb_loss)
+    n_test = len(nn_loss)
+
+    nn_out = (nn_loss > thresh)
+    xgb_out = (xgb_loss > thresh)
+
+    nn_cnt = int(np.sum(nn_out))
+    xgb_cnt = int(np.sum(xgb_out))
+    nn_pct = (nn_cnt / n_test) * 100.0 if n_test > 0 else 0.0
+    xgb_pct = (xgb_cnt / n_test) * 100.0 if n_test > 0 else 0.0
+
+    # Discordant frame pairs:
+    # b: XGBoost in outage, NN NOT in outage (NN succeeds where XGB fails)
+    # c: NN in outage, XGBoost NOT in outage (XGB succeeds where NN fails)
+    b_disc = int(np.sum((~nn_out) & xgb_out))
+    c_disc = int(np.sum(nn_out & (~xgb_out)))
+
+    if (b_disc + c_disc) > 0:
+        p_mcnemar = float(stats.binomtest(b_disc, b_disc + c_disc, 0.5).pvalue)
+    else:
+        p_mcnemar = 1.0
+
+    return {
+        "n_test": n_test,
+        "nn_cnt": nn_cnt,
+        "xgb_cnt": xgb_cnt,
+        "nn_pct": nn_pct,
+        "xgb_pct": xgb_pct,
+        "b_disc": b_disc,
+        "c_disc": c_disc,
+        "p_mcnemar": p_mcnemar
+    }
+
+
+

@@ -1,0 +1,16 @@
+Scenario,Algorithm,chronological,random,Gap_Rand_minus_Chron
+Scenario 1 (V2I - Day - Location A),KNN,47.84,48.73,0.89
+Scenario 1 (V2I - Day - Location A),NB,38.35,40.41,2.06
+Scenario 1 (V2I - Day - Location A),NN,48.66,50.58,1.92
+Scenario 1 (V2I - Day - Location A),RF,48.73,50.1,1.37
+Scenario 1 (V2I - Day - Location A),XGB,48.45,51.27,2.82
+Scenario 2 (V2I - Night),KNN,28.4,45.43,17.03
+Scenario 2 (V2I - Night),NB,26.89,24.09,-2.8
+Scenario 2 (V2I - Night),NN,35.18,46.39,11.2
+Scenario 2 (V2I - Night),RF,28.8,46.16,17.37
+Scenario 2 (V2I - Night),XGB,24.87,46.78,21.9
+Scenario 3 (V2I - Day - Location B),KNN,22.48,24.94,2.46
+Scenario 3 (V2I - Day - Location B),NB,15.1,7.61,-7.49
+Scenario 3 (V2I - Day - Location B),NN,30.76,29.64,-1.12
+Scenario 3 (V2I - Day - Location B),RF,22.15,24.94,2.8
+Scenario 3 (V2I - Day - Location B),XGB,23.83,25.62,1.79
